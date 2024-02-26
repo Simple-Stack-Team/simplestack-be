@@ -6,3 +6,29 @@ datasource db {
 generator client {
   provider = "prisma-client-js"
 }
+
+model Organization {
+  id                String    @id @default(auto()) @map("_id") @db.ObjectId
+  orgName           String    
+  headquarterAdress String
+  employees         Employee[]
+  createdAt         DateTime  @default(now())
+}
+
+model Employee {
+  id                String        @id @default(auto()) @map("_id") @db.ObjectId
+  name              String
+  email             String        @unique
+  password          String
+  organization      Organization  @relation(fields: [organizationId], references: [id])
+  organizationId    String        @db.ObjectId
+  roles             Role[]        @default([EMPLOYEE])
+  createdAt         DateTime      @default(now())
+}
+
+enum Role {
+  EMPLOYEE
+  PROJECT_MANAGER
+  DEPARTMENT_MANAGER
+  ORGANIZATION_ADMIN
+}
