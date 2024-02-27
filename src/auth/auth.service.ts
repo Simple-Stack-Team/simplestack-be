@@ -10,6 +10,7 @@ import { EmployeesService } from 'src/employees/employees.service';
 import { SignUpAdminDto } from 'src/auth/dto/auth-signup-org.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { OrganizationsService } from 'src/organizations/organizations.service';
+import { SignUpEmployeeDto } from 'src/auth/dto/auth-signup-emp.dto';
 
 @Injectable()
 export class AuthService {
@@ -79,5 +80,28 @@ export class AuthService {
 
   async comparePasswords(loginPassword: string, userPassword: string) {
     return await bcrypt.compare(loginPassword, userPassword);
+  }
+
+  async signUpEmployee(orgId: string, signUpEmployee: SignUpEmployeeDto) {
+    const { name, email, password } = signUpEmployee;
+
+    const user = await this.prismaService.employee.findUnique({
+      where: { email },
+    });
+
+    if (user) throw new HttpException('User already exist', 409);
+
+    const org = await this.prismaService.organization.findUnique({
+      where: { id: orgId },
+    });
+
+    if (!org) throw new HttpException('Organization not found', 404);
+
+    return await this.employeeService.createEmployee(
+      name,
+      email,
+      password,
+      orgId,
+    );
   }
 }
