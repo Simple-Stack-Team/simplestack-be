@@ -1,9 +1,17 @@
-import { Body, Controller, Post, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  HttpCode,
+  HttpStatus,
+  Param,
+} from '@nestjs/common';
 
 import { AuthService } from 'src/auth/auth.service';
 import { SignUpAdminDto } from 'src/auth/dto/auth-signup-org.dto';
 import { Public } from 'src/auth/decorators/public.decorator';
-import { LoginDto } from './dto/auth-login.dto';
+import { LoginDto } from 'src/auth/dto/auth-login.dto';
+import { SignUpEmployeeDto } from 'src/auth/dto/auth-signup-emp.dto';
 
 @Public()
 @Controller('auth')
@@ -20,5 +28,14 @@ export class AuthController {
   @Post('signup')
   async signupAdmin(@Body() signupAdmin: SignUpAdminDto) {
     return await this.authService.signUpAdmin(signupAdmin);
+  }
+
+  @HttpCode(HttpStatus.CREATED)
+  @Post(':orgId/signup')
+  async signUpEmployee(
+    @Param('orgId') orgId: string,
+    @Body() signUpEmployee: SignUpEmployeeDto,
+  ) {
+    return await this.authService.signUpEmployee(orgId, signUpEmployee);
   }
 }
