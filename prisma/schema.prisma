@@ -14,6 +14,7 @@ model Organization {
   employees         Employee[]
   createdAt         DateTime  @default(now())
   teamRoles         TeamRole[]
+  departments       Department[]
 }
 
 model TeamRole {
@@ -32,6 +33,20 @@ model Employee {
   organizationId    String        @db.ObjectId
   roles             Role[]        @default([EMPLOYEE])
   createdAt         DateTime      @default(now())
+  managerAt         Department?   @relation("ManagerDepartment")
+  department        Department?   @relation("MemberDepartment", fields: [departmentId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+  departmentId      String?       @db.ObjectId
+}
+
+model Department {
+  id                String        @id @default(auto()) @map("_id") @db.ObjectId
+  name              String
+  createdAt         DateTime      @default(now())
+  organization      Organization  @relation(fields: [organizationId], references: [id])
+  organizationId    String        @db.ObjectId
+  managerId         String?       @db.ObjectId @unique
+  manager           Employee?     @relation("ManagerDepartment", fields: [managerId], references: [id])
+  members           Employee[]    @relation("MemberDepartment")
 }
 
 enum Role {
