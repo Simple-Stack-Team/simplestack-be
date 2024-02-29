@@ -1,4 +1,60 @@
-import { Controller } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Param,
+  Body,
+  Get,
+  Put,
+  Delete,
+} from '@nestjs/common';
+
+import { OrganizationsService } from 'src/organizations/organizations.service';
+import { TeamRoleDto } from 'src/organizations/dto/teamrole.dto';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { Role } from 'src/auth/types/role.types';
 
 @Controller('organizations')
-export class OrganizationsController {}
+export class OrganizationsController {
+  constructor(private readonly organizationsService: OrganizationsService) {}
+
+  @Roles(Role.ORGANIZATION_ADMIN)
+  @Post(':id/teamroles')
+  async createTeamRoles(
+    @Param('id') orgId: string,
+    @Body() teamRole: TeamRoleDto,
+  ) {
+    return await this.organizationsService.createOrganizationTeamRoles(
+      teamRole.name,
+      orgId,
+    );
+  }
+
+  @Roles(Role.ORGANIZATION_ADMIN)
+  @Get(':id/teamroles')
+  async getTeamRoles(@Param('id') orgId: string) {
+    return await this.organizationsService.getOrganizationTeamRoles(orgId);
+  }
+
+  @Roles(Role.ORGANIZATION_ADMIN)
+  @Put(':id/teamroles/:teamroleId')
+  async updateTeamRole(
+    @Param('id') orgId: string,
+    @Param('teamroleId') teamRoleId: string,
+    @Body() teamRole: TeamRoleDto,
+  ) {
+    return await this.organizationsService.updateTeamRole(
+      orgId,
+      teamRoleId,
+      teamRole.name,
+    );
+  }
+
+  @Roles(Role.ORGANIZATION_ADMIN)
+  @Delete(':id/teamroles/:teamroleId')
+  async deleteTeamRole(
+    @Param('id') orgId: string,
+    @Param('teamroleId') teamRoleId: string,
+  ) {
+    return await this.organizationsService.deleteTeamRole(orgId, teamRoleId);
+  }
+}
