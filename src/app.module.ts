@@ -9,6 +9,7 @@ import { AuthModule } from 'src/auth/auth.module';
 import { EmployeesModule } from 'src/employees/employees.module';
 import { OrganizationsModule } from 'src/organizations/organizations.module';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { DepartmentsModule } from 'src/departments/departments.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { AuthGuard } from 'src/auth/guards/auth.guard';
     AuthModule,
     EmployeesModule,
     OrganizationsModule,
+    DepartmentsModule,
   ],
   controllers: [HelloWorldController],
   providers: [
