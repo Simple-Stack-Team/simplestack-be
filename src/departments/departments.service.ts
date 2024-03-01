@@ -75,4 +75,69 @@ export class DepartmentsService {
     if (!department) throw new NotFoundException('Department not found');
     return department;
   }
+
+  async assignDepManagerRole(id: string) {
+    const employee = await this.prismaService.employee.findUnique({
+      where: { id },
+      include: { organization: true, department: false },
+    });
+
+    if (!employee) throw new NotFoundException();
+    if (employee.roles.includes('DEPARTMENT_MANAGER'))
+      throw new HttpException(
+        'Employee already have role of department manager',
+        409,
+      );
+    return await this.prismaService.employee.update({
+      where: { id },
+      data: {
+        roles: {
+          push: 'DEPARTMENT_MANAGER',
+        },
+      },
+    });
+  }
+
+  async assignDepManager(depId: string, depManagerId: string) {
+    const dep = await this.getDepartment(depId);
+    if (dep.managerId)
+      throw new HttpException('Department already has a manager assigned', 409);
+    const employee = await this.prismaService.employee.findUnique({
+      where: { id: depManagerId },
+      include: { organization: true, department: false },
+    });
+    if (!employee) throw new NotFoundException();
+    if (!employee.roles.includes('DEPARTMENT_MANAGER'))
+      throw new HttpException(
+        'Employee do not have role of department manager',
+        409,
+      );
+
+    const alreadyManager = await this.prismaService.department.findUnique({
+      where: { managerId: depManagerId },
+    });
+    if (alreadyManager) {
+      throw new HttpException(
+        'Employee is already a manager of another department',
+        409,
+      );
+    }
+
+    await this.prismaService.employee.update({
+      where: { id: depManagerId },
+      data: {
+        departmentId: depId,
+        managerAt: {
+          connect: { id: depId },
+        },
+      },
+    });
+
+    return await this.prismaService.department.update({
+      where: { id: depId },
+      data: {
+        managerId: depManagerId,
+      },
+    });
+  }
 }
