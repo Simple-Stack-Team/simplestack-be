@@ -85,7 +85,7 @@ export class DepartmentsController {
   }
 
   @Roles(Role.DEPARTMENT_MANAGER, Role.ORGANIZATION_ADMIN)
-  @Put(':depId/assign-member/:empId')
+  @Put(':depId/delete-member/:empId')
   async deleteDepartMemmers(
     @Param('depId') depId: string,
     @Param('empId') empId: string,

@@ -61,7 +61,7 @@ export class EmployeesService {
     });
   }
 
-  async getUnassignMembers(orgId: string): Promise<Employee[]> {
+  async getUnassignedMembers(orgId: string): Promise<Employee[]> {
     const org = await this.prismaService.organization.findUnique({
       where: { id: orgId },
     });

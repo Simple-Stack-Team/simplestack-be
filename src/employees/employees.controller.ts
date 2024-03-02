@@ -16,7 +16,7 @@ export class EmployeesController {
 
   @Roles(Role.DEPARTMENT_MANAGER, Role.ORGANIZATION_ADMIN)
   @Get(':orgId/unassigned-employees')
-  async getUnassignMemmers(@Param('orgId') orgId: string) {
-    return await this.employeesService.getUnassignMembers(orgId);
+  async getUnassignedMemmers(@Param('orgId') orgId: string) {
+    return await this.employeesService.getUnassignedMembers(orgId);
   }
 }
