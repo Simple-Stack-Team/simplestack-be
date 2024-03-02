@@ -74,4 +74,22 @@ export class DepartmentsController {
   ) {
     return await this.departmentsService.assignDepManager(depId, depManagerId);
   }
+
+  @Roles(Role.DEPARTMENT_MANAGER, Role.ORGANIZATION_ADMIN)
+  @Put(':depId/assign-member/:empId')
+  async assignDepartMemmers(
+    @Param('depId') depId: string,
+    @Param('empId') empId: string,
+  ) {
+    return await this.departmentsService.assignDepMember(depId, empId);
+  }
+
+  @Roles(Role.DEPARTMENT_MANAGER, Role.ORGANIZATION_ADMIN)
+  @Put(':depId/delete-member/:empId')
+  async deleteDepartMemmers(
+    @Param('depId') depId: string,
+    @Param('empId') empId: string,
+  ) {
+    return await this.departmentsService.deleteDepMember(depId, empId);
+  }
 }
