@@ -60,4 +60,19 @@ export class EmployeesService {
       },
     });
   }
+
+  async getUnassignMembers(orgId: string): Promise<Employee[]> {
+    const org = await this.prismaService.organization.findUnique({
+      where: { id: orgId },
+    });
+    if (!org) throw new NotFoundException('Organization not found');
+
+    const data = await this.prismaService.employee.findMany({
+      where: {
+        organizationId: orgId,
+      },
+    });
+    const result = data.filter((emp) => emp.departmentId === null);
+    return result;
+  }
 }

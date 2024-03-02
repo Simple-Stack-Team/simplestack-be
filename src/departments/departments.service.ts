@@ -68,12 +68,22 @@ export class DepartmentsService {
   }
 
   async deleteDepartment(id: string) {
-    const department = await this.prismaService.department.delete({
+    const department = await this.prismaService.department.findUnique({
       where: { id },
+      include: { members: true }, // Include associated employees
     });
 
     if (!department) throw new NotFoundException('Department not found');
-    return department;
+
+    if (department.members.length > 0) {
+      await this.prismaService.employee.updateMany({
+        where: { departmentId: id },
+        data: { departmentId: null },
+      });
+    }
+    return this.prismaService.department.delete({
+      where: { id },
+    });
   }
 
   async assignDepManagerRole(id: string) {
@@ -82,7 +92,7 @@ export class DepartmentsService {
       include: { organization: true, department: false },
     });
 
-    if (!employee) throw new NotFoundException();
+    if (!employee) throw new NotFoundException('Employee not found');
     if (employee.roles.includes('DEPARTMENT_MANAGER'))
       throw new HttpException(
         'Employee already have role of department manager',
@@ -106,7 +116,7 @@ export class DepartmentsService {
       where: { id: depManagerId },
       include: { organization: true, department: false },
     });
-    if (!employee) throw new NotFoundException();
+    if (!employee) throw new NotFoundException('Employee not found');
     if (!employee.roles.includes('DEPARTMENT_MANAGER'))
       throw new HttpException(
         'Employee do not have role of department manager',
@@ -137,6 +147,37 @@ export class DepartmentsService {
       where: { id: depId },
       data: {
         managerId: depManagerId,
+      },
+    });
+  }
+
+  async assignDepMember(depId: string, empId: string) {
+    await this.getDepartment(depId);
+    const employee = await this.prismaService.employee.findUnique({
+      where: { id: empId },
+      include: { organization: true },
+    });
+    if (!employee) throw new NotFoundException('Employee not found');
+    if (employee.departmentId)
+      throw new HttpException('Employee is already in a department', 409);
+
+    return await this.prismaService.employee.update({
+      where: { id: empId },
+      data: { departmentId: depId },
+    });
+  }
+
+  async deleteDepMember(depId: string, empId: string) {
+    await this.getDepartment(depId);
+    const emp = this.prismaService.employee.findUnique({
+      where: { id: empId, departmentId: depId },
+    });
+    if (!emp) throw new NotFoundException('Employee not found');
+
+    return await this.prismaService.employee.update({
+      where: { id: empId },
+      data: {
+        departmentId: null,
       },
     });
   }

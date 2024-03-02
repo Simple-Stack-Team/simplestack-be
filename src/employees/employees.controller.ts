@@ -13,4 +13,10 @@ export class EmployeesController {
   async getEmployee(@Param('id') id: string) {
     return await this.employeesService.getEmployeeById(id);
   }
+
+  @Roles(Role.DEPARTMENT_MANAGER, Role.ORGANIZATION_ADMIN)
+  @Get(':orgId/unassigned-employees')
+  async getUnassignMemmers(@Param('orgId') orgId: string) {
+    return await this.employeesService.getUnassignMembers(orgId);
+  }
 }
