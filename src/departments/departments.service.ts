@@ -86,28 +86,6 @@ export class DepartmentsService {
     });
   }
 
-  async assignDepManagerRole(id: string) {
-    const employee = await this.prismaService.employee.findUnique({
-      where: { id },
-      include: { organization: true, department: false },
-    });
-
-    if (!employee) throw new NotFoundException('Employee not found');
-    if (employee.roles.includes('DEPARTMENT_MANAGER'))
-      throw new HttpException(
-        'Employee already have role of department manager',
-        409,
-      );
-    return await this.prismaService.employee.update({
-      where: { id },
-      data: {
-        roles: {
-          push: 'DEPARTMENT_MANAGER',
-        },
-      },
-    });
-  }
-
   async assignDepManager(depId: string, depManagerId: string) {
     const dep = await this.getDepartment(depId);
     if (dep.managerId)
