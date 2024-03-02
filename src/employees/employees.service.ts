@@ -8,22 +8,25 @@ import { Employee } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
 import { PrismaService } from 'src/prisma/prisma.service';
+import { rolesDto } from 'src/employees/dto/assign-roles.dto';
 
 @Injectable()
 export class EmployeesService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async getEmployees(): Promise<Employee[]> {
+  async getAllEmployees(orgId: string): Promise<Employee[]> {
     try {
-      return await this.prismaService.employee.findMany();
+      return await this.prismaService.employee.findMany({
+        where: { organizationId: orgId },
+      });
     } catch (error) {
       throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
-  async getEmployeeById(id: string): Promise<Employee> {
+  async getEmployeeById(orgId: string, id: string): Promise<Employee> {
     const employee = await this.prismaService.employee.findUnique({
-      where: { id },
+      where: { organizationId: orgId, id },
       include: { organization: true },
     });
 
@@ -74,5 +77,31 @@ export class EmployeesService {
     });
     const result = data.filter((emp) => emp.departmentId === null);
     return result;
+  }
+
+  async assignRoles(orgId: string, id: string, roles: rolesDto) {
+    const ROLE = [
+      'PROJECT_MANAGER',
+      'DEPARTMENT_MANAGER',
+      'ORGANIZATION_ADMIN',
+    ];
+
+    const employee = await this.prismaService.employee.findUnique({
+      where: { id: id, organizationId: orgId },
+    });
+
+    if (!employee) throw new NotFoundException('Employee not found');
+
+    const newRoles = roles.roles.filter((role) => ROLE.includes(role));
+    newRoles.push('EMPLOYEE');
+
+    return await this.prismaService.employee.update({
+      where: { id: id, organizationId: orgId },
+      data: {
+        roles: {
+          set: newRoles,
+        },
+      },
+    });
   }
 }

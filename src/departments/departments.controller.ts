@@ -61,12 +61,6 @@ export class DepartmentsController {
   }
 
   @Roles(Role.ORGANIZATION_ADMIN)
-  @Put('assign-manager-role/:id')
-  async assignDepManagerRole(@Param('id') id: string) {
-    return await this.departmentsService.assignDepManagerRole(id);
-  }
-
-  @Roles(Role.ORGANIZATION_ADMIN)
   @Put(':depId/assign-manager/:depManagerId')
   async assignDepartManager(
     @Param('depId') depId: string,
