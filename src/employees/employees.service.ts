@@ -87,7 +87,7 @@ export class EmployeesService {
     ];
 
     const employee = await this.prismaService.employee.findUnique({
-      where: { id: id, organizationId: orgId },
+      where: { id, organizationId: orgId },
     });
 
     if (!employee) throw new NotFoundException('Employee not found');
@@ -116,7 +116,7 @@ export class EmployeesService {
     newRoles.push('EMPLOYEE');
 
     return await this.prismaService.employee.update({
-      where: { id: id, organizationId: orgId },
+      where: { id, organizationId: orgId },
       data: {
         roles: {
           set: newRoles,

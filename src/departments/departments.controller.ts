@@ -7,6 +7,15 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
+import {
+  ApiTags,
+  ApiNotFoundResponse,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiBearerAuth,
+  ApiConflictResponse,
+  ApiBadRequestResponse,
+} from '@nestjs/swagger';
 
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/auth/types/role.types';
@@ -14,10 +23,14 @@ import { Role } from 'src/auth/types/role.types';
 import { DepartmentsService } from 'src/departments/departments.service';
 import { CreateDepartmentDto } from 'src/departments/dto/create-department.dto';
 
+@ApiTags('departments')
+@ApiBearerAuth()
 @Controller('organizations/:orgId/departments')
 export class DepartmentsController {
   constructor(private readonly departmentsService: DepartmentsService) {}
 
+  @ApiCreatedResponse({ description: 'Department created' })
+  @ApiNotFoundResponse({ description: 'Organization not found' })
   @Roles(Role.ORGANIZATION_ADMIN)
   @Post()
   async create(
@@ -30,18 +43,22 @@ export class DepartmentsController {
     );
   }
 
+  @ApiOkResponse({ description: 'Organization departments list' })
   @Roles(Role.ORGANIZATION_ADMIN)
   @Get()
   async findAll(@Param('orgId') orgId: string) {
     return await this.departmentsService.getOrganizationDepartments(orgId);
   }
 
+  @ApiNotFoundResponse({ description: 'Department not found' })
   @Roles(Role.ORGANIZATION_ADMIN)
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return await this.departmentsService.getDepartment(id);
   }
 
+  @ApiBadRequestResponse({ description: 'Invalid body' })
+  @ApiNotFoundResponse({ description: 'Department not found' })
   @Roles(Role.ORGANIZATION_ADMIN)
   @Put(':id')
   async update(
@@ -54,12 +71,16 @@ export class DepartmentsController {
     );
   }
 
+  @ApiNotFoundResponse({ description: 'Department not found' })
   @Roles(Role.ORGANIZATION_ADMIN)
   @Delete(':id')
   async remove(@Param('id') id: string) {
     return await this.departmentsService.deleteDepartment(id);
   }
 
+  @ApiConflictResponse({
+    description: 'Already a manager at another department',
+  })
   @Roles(Role.ORGANIZATION_ADMIN)
   @Put(':depId/assign-manager/:depManagerId')
   async assignDepartManager(
@@ -70,17 +91,19 @@ export class DepartmentsController {
   }
 
   @Roles(Role.DEPARTMENT_MANAGER, Role.ORGANIZATION_ADMIN)
+  @ApiNotFoundResponse({ description: 'Department/Employee not found' })
   @Put(':depId/assign-member/:empId')
-  async assignDepartMemmers(
+  async assignDepartMember(
     @Param('depId') depId: string,
     @Param('empId') empId: string,
   ) {
     return await this.departmentsService.assignDepMember(depId, empId);
   }
 
+  @ApiNotFoundResponse({ description: 'Department/Employee not found' })
   @Roles(Role.DEPARTMENT_MANAGER, Role.ORGANIZATION_ADMIN)
-  @Put(':depId/delete-member/:empId')
-  async deleteDepartMemmers(
+  @Delete(':depId/delete-member/:empId')
+  async deleteDepartMembers(
     @Param('depId') depId: string,
     @Param('empId') empId: string,
   ) {
