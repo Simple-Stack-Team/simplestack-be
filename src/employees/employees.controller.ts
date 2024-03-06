@@ -15,7 +15,7 @@ export class EmployeesController {
     return await this.employeesService.getAllEmployees(orgId);
   }
 
-  @Roles(Role.EMPLOYEE) // aici accesul e corect?
+  @Roles(Role.EMPLOYEE)
   @Get(':id/employee')
   async getEmployee(@Param('orgId') orgId: string, @Param('id') id: string) {
     return await this.employeesService.getEmployeeById(orgId, id);

@@ -21,7 +21,7 @@ model Organization {
 model TeamRole {
   id                  String          @id @default(auto()) @map("_id") @db.ObjectId
   name                String
-  organization        Organization    @relation(fields: [organizationId], references: [id])
+  organization        Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   organizationId      String          @db.ObjectId
 }
 
@@ -30,12 +30,12 @@ model Employee {
   name                String
   email               String          @unique
   password            String
-  organization        Organization    @relation(fields: [organizationId], references: [id])
+  organization        Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   organizationId      String          @db.ObjectId
   roles               Role[]          @default([EMPLOYEE])
   createdAt           DateTime        @default(now())
   managerAt           Department?     @relation("ManagerDepartment")
-  department          Department?     @relation("MemberDepartment", fields: [departmentId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+  department          Department?     @relation(fields: [departmentId], references: [id], onUpdate: NoAction, onDelete: NoAction)
   departmentId        String?         @db.ObjectId
   createdSkills       Skill[]
   personalSkills      SkillAssignment[]
@@ -45,11 +45,11 @@ model Department {
   id                  String          @id @default(auto()) @map("_id") @db.ObjectId
   name                String
   createdAt           DateTime        @default(now())
-  organization        Organization    @relation(fields: [organizationId], references: [id])
+  organization        Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   organizationId      String          @db.ObjectId
   managerId           String?         @db.ObjectId @unique
-  manager             Employee?       @relation("ManagerDepartment", fields: [managerId], references: [id])
-  members             Employee[]      @relation("MemberDepartment")
+  manager             Employee?       @relation("ManagerDepartment", fields: [managerId], references: [id], onDelete: SetNull)
+  members             Employee[]      
   skills              Skill[]         @relation(fields: [skillIds], references: [id])
   skillIds            String[]        @db.ObjectId
 }
@@ -58,7 +58,7 @@ model SkillCategory {
   id                  String          @id @default(auto()) @map("_id") @db.ObjectId
   name                String
   skills              Skill[]
-  organization        Organization    @relation(fields: [organizationId], references: [id]) 
+  organization        Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade) 
   organizationId      String          @db.ObjectId
 }
 
@@ -66,9 +66,9 @@ model Skill {
   id                  String          @id @default(auto()) @map("_id") @db.ObjectId
   name                String
   description         String
-  category            SkillCategory   @relation(fields: [categoryId], references: [id])
+  category            SkillCategory   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   categoryId          String          @db.ObjectId
-  author              Employee        @relation(fields: [authorId], references: [id])
+  author              Employee        @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId            String          @db.ObjectId
   departments         Department[]    @relation(fields: [departmentIds], references: [id])
   departmentIds       String[]        @db.ObjectId
@@ -79,10 +79,10 @@ model SkillAssignment {
   id                  String          @id @default(auto()) @map("_id") @db.ObjectId
   level               Int
   experience          String
-  employee            Employee        @relation(fields: [employeeId], references: [id])
+  employee            Employee        @relation(fields: [employeeId], references: [id], onDelete: Cascade)
   employeeId          String          @db.ObjectId
   skillId             String          @db.ObjectId
-  skill               Skill           @relation(fields: [skillId], references: [id])
+  skill               Skill           @relation(fields: [skillId], references: [id], onDelete: Cascade)
 }
 
 enum Role {
