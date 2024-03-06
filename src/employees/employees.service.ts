@@ -18,6 +18,10 @@ export class EmployeesService {
     try {
       return await this.prismaService.employee.findMany({
         where: { organizationId: orgId },
+        include: {
+          department: true,
+          managerAt: true,
+        },
       });
     } catch (error) {
       throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
@@ -27,7 +31,13 @@ export class EmployeesService {
   async getEmployeeById(orgId: string, id: string): Promise<Employee> {
     const employee = await this.prismaService.employee.findUnique({
       where: { organizationId: orgId, id },
-      include: { organization: true },
+      include: {
+        organization: true,
+        personalSkills: true,
+        createdSkills: true,
+        department: true,
+        managerAt: true,
+      },
     });
 
     if (!employee) throw new NotFoundException();
