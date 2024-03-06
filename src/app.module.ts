@@ -10,6 +10,7 @@ import { EmployeesModule } from 'src/employees/employees.module';
 import { OrganizationsModule } from 'src/organizations/organizations.module';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { DepartmentsModule } from 'src/departments/departments.module';
+import { SkillsModule } from 'src/skills/skills.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { DepartmentsModule } from 'src/departments/departments.module';
     EmployeesModule,
     OrganizationsModule,
     DepartmentsModule,
+    SkillsModule,
   ],
   controllers: [HelloWorldController],
   providers: [

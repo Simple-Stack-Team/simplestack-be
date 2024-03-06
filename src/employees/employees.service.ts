@@ -93,6 +93,26 @@ export class EmployeesService {
     if (!employee) throw new NotFoundException('Employee not found');
 
     const newRoles = roles.roles.filter((role) => ROLE.includes(role));
+
+    if (
+      !newRoles.includes('ORGANIZATION_ADMIN') &&
+      employee.roles.includes('ORGANIZATION_ADMIN')
+    ) {
+      const nr_org_admin = await this.prismaService.employee.count({
+        where: {
+          organizationId: orgId,
+          roles: {
+            has: 'ORGANIZATION_ADMIN',
+          },
+        },
+      });
+      if (nr_org_admin === 1)
+        throw new HttpException(
+          'Organization should have at least one organization admin',
+          409,
+        );
+    }
+
     newRoles.push('EMPLOYEE');
 
     return await this.prismaService.employee.update({
