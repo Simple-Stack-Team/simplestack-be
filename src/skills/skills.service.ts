@@ -2,6 +2,7 @@ import { HttpException, Injectable } from '@nestjs/common';
 
 import { skillsDto } from 'src/skills/dto/create-updates-skills.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { assignSkillDto } from 'src/skills/dto/assign-skill.dto';
 
 @Injectable()
 export class SkillsService {
@@ -216,6 +217,59 @@ export class SkillsService {
           set: newSkills,
         },
       },
+    });
+  }
+
+  async assignSkill(orgId: string, skillAssign: assignSkillDto) {
+    const org = await this.prismaService.organization.findUnique({
+      where: { id: orgId },
+    });
+    if (!org) throw new HttpException('Organization not found', 404);
+
+    const employee = await this.prismaService.employee.findUnique({
+      where: { id: skillAssign.employeeId },
+    });
+    if (!employee) throw new HttpException('Employee not found', 404);
+
+    const skill = await this.prismaService.skill.findUnique({
+      where: { id: skillAssign.skillId },
+    });
+    if (!skill) throw new HttpException('Skill not found', 404);
+
+    return await this.prismaService.skillAssignment.create({
+      data: {
+        level: skillAssign.level,
+        experience: skillAssign.experience,
+        skillId: skillAssign.skillId,
+        employeeId: skillAssign.employeeId,
+      },
+    });
+  }
+
+  async removeSkillFromEmployee(
+    orgId: string,
+    skillAssignmentId: string,
+    empId: string,
+  ) {
+    const org = await this.prismaService.organization.findUnique({
+      where: { id: orgId },
+    });
+    if (!org) throw new HttpException('Organization not found', 404);
+
+    const employee = await this.prismaService.employee.findUnique({
+      where: { id: empId },
+      include: { personalSkills: true },
+    });
+    if (!employee) throw new HttpException('Employee not found', 404);
+
+    const skillAssign = await this.prismaService.skillAssignment.findUnique({
+      where: { id: skillAssignmentId },
+    });
+    if (!skillAssign)
+      throw new HttpException('Assignmented skill not found', 404);
+
+    return await this.prismaService.skillAssignment.delete({
+      where: { id: skillAssignmentId },
     });
   }
 }
