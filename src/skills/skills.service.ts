@@ -95,6 +95,7 @@ export class SkillsService {
         authorId: authorId,
         description: data.description,
         categoryId: data.skillCategoryId,
+        organizationId: orgId,
       },
     });
   }
