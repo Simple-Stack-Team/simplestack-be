@@ -9,7 +9,7 @@ import {
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/auth/types/role.types';
 import { EmployeesService } from 'src/employees/employees.service';
-import { rolesDto } from 'src/employees/dto/assign-roles.dto';
+import { RolesDto } from 'src/employees/dto/assign-roles.dto';
 
 @ApiBearerAuth()
 @ApiTags('employees')
@@ -48,7 +48,7 @@ export class EmployeesController {
   async assignRoles(
     @Param('orgId') orgId: string,
     @Param('id') id: string,
-    @Body() roles: rolesDto,
+    @Body() roles: RolesDto,
   ) {
     return await this.employeesService.assignRoles(orgId, id, roles);
   }

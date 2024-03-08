@@ -1,6 +1,6 @@
 import { IsMongoId, IsNotEmpty, IsString } from 'class-validator';
 
-export class skillsDto {
+export class SkillsDto {
   @IsMongoId()
   @IsNotEmpty()
   skillCategoryId: string;

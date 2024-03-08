@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export class skillCategoryDto {
+export class SkillCategoryDto {
   @IsString()
   @IsNotEmpty()
   name: string;

@@ -9,11 +9,11 @@ import {
 } from '@nestjs/common';
 
 import { Roles } from 'src/auth/decorators/roles.decorator';
-import { skillsDto } from 'src/skills/dto/create-updates-skills.dto';
-import { skillCategoryDto } from 'src/skills/dto/skill-category.dto';
+import { SkillsDto } from 'src/skills/dto/create-updates-skills.dto';
+import { SkillCategoryDto } from 'src/skills/dto/skill-category.dto';
 import { Role } from 'src/auth/types/role.types';
 import { SkillsService } from 'src/skills/skills.service';
-import { assignSkillDto } from 'src/skills/dto/assign-skill.dto';
+import { AssignSkillDto } from 'src/skills/dto/assign-skill.dto';
 
 @Controller('organizations/:orgId/skills')
 export class SkillsController {
@@ -23,7 +23,7 @@ export class SkillsController {
   @Post('SkillCategory')
   async createSkillCategory(
     @Param('orgId') orgId: string,
-    @Body() data: skillCategoryDto,
+    @Body() data: SkillCategoryDto,
   ) {
     return await this.skillsService.createSkillCategory(orgId, data.name);
   }
@@ -44,7 +44,7 @@ export class SkillsController {
   @Put('SkillCategory/update/:categorySkillId')
   async updateSkillCategory(
     @Param('categorySkillId') id: string,
-    @Body() data: skillCategoryDto,
+    @Body() data: SkillCategoryDto,
   ) {
     return await this.skillsService.updateSkillCategory(id, data.name);
   }
@@ -60,7 +60,7 @@ export class SkillsController {
   async createSkill(
     @Param('orgId') orgId: string,
     @Param('authorId') authorId: string,
-    @Body() data: skillsDto,
+    @Body() data: SkillsDto,
   ) {
     return await this.skillsService.createSkill(orgId, authorId, data);
   }
@@ -70,7 +70,7 @@ export class SkillsController {
   async updateSkill(
     @Param('skillId') skillId: string,
     @Param('authorId') authorId: string,
-    @Body() data: skillsDto,
+    @Body() data: SkillsDto,
   ) {
     return await this.skillsService.updateSkill(skillId, authorId, data);
   }
@@ -118,7 +118,7 @@ export class SkillsController {
   @Post('assign-skill')
   async assignSkill(
     @Param('orgId') orgId: string,
-    @Body() skillAssign: assignSkillDto,
+    @Body() skillAssign: AssignSkillDto,
   ) {
     return await this.skillsService.assignSkill(orgId, skillAssign);
   }

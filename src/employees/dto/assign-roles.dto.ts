@@ -1,7 +1,7 @@
 import { Role } from '@prisma/client';
 import { ArrayNotEmpty, IsArray, IsNotEmpty } from 'class-validator';
 
-export class rolesDto {
+export class RolesDto {
   @IsNotEmpty()
   @IsArray()
   @ArrayNotEmpty()
