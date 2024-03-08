@@ -1,14 +1,15 @@
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { SwaggerModule } from '@nestjs/swagger';
 
 import { AppModule } from 'src/app.module';
+import { DEFAULT_ORIGIN, DEFAULT_PORT, swaggerConfig } from 'src/app.config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.enableCors({ origin: '*' });
+  app.enableCors({ origin: DEFAULT_ORIGIN });
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -18,15 +19,9 @@ async function bootstrap() {
   );
 
   const configService = app.get(ConfigService);
-  const port = configService.get('PORT') || 3200;
+  const port = configService.get('PORT') || DEFAULT_PORT;
 
-  const config = new DocumentBuilder()
-    .addBearerAuth()
-    .setTitle('SimpleStack Team Finder')
-    .setDescription('The Team Finder API description')
-    .setVersion('1.0')
-    .build();
-  const document = SwaggerModule.createDocument(app, config);
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api', app, document);
 
   await app

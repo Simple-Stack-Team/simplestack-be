@@ -15,7 +15,9 @@ model Organization {
   createdAt           DateTime        @default(now())
   teamRoles           TeamRole[]
   departments         Department[]
-  skills              SkillCategory[]     
+  skills              SkillCategory[]
+  orgSkills           Skill[]
+  projects            Project[]
 }
 
 model TeamRole {
@@ -23,6 +25,7 @@ model TeamRole {
   name                String
   organization        Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   organizationId      String          @db.ObjectId
+  projectTeamRoles    ProjectTeamRole[]
 }
 
 model Employee {
@@ -63,6 +66,8 @@ model SkillCategory {
 }
 
 model Skill {
+  organization        Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade) 
+  organizationId      String          @db.ObjectId
   id                  String          @id @default(auto()) @map("_id") @db.ObjectId
   name                String
   description         String
@@ -83,6 +88,29 @@ model SkillAssignment {
   employeeId          String          @db.ObjectId
   skillId             String          @db.ObjectId
   skill               Skill           @relation(fields: [skillId], references: [id], onDelete: Cascade)
+}
+
+model Project {
+  id                  String          @id @default(auto()) @map("_id") @db.ObjectId
+  organization        Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade) 
+  organizationId      String          @db.ObjectId
+  name                String
+  period              String
+  startDate           DateTime
+  deadlineDate        DateTime?
+  status              String
+  description         String
+  technologyStack     String[]
+  teamRoles           ProjectTeamRole[]
+}
+
+model ProjectTeamRole {
+  id                  String          @id @default(auto()) @map("_id") @db.ObjectId
+  teamroleId          String          @db.ObjectId
+  teamRole            TeamRole        @relation(fields: [teamroleId], references: [id])
+  projectId           String          @db.ObjectId
+  project             Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  nrOfMembers         Int
 }
 
 enum Role {
