@@ -29,7 +29,7 @@ import { AssignSkillDto } from 'src/skills/dto/assign-skill.dto';
 @ApiBearerAuth()
 @ApiTags('skills')
 @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
-@Controller('organizations/:organization-id/skills')
+@Controller('organizations/:orgId/skills')
 export class SkillsController {
   constructor(private readonly skillsService: SkillsService) {}
 
@@ -38,7 +38,7 @@ export class SkillsController {
   @Roles(Role.DEPARTMENT_MANAGER, Role.ORGANIZATION_ADMIN)
   @Post('skill-category')
   async createSkillCategory(
-    @Param('organization-id') orgId: string,
+    @Param('orgId') orgId: string,
     @Body() data: SkillCategoryDto,
   ) {
     return await this.skillsService.createSkillCategory(orgId, data.name);
@@ -48,7 +48,7 @@ export class SkillsController {
   @ApiOkResponse({ description: 'Organization skill categories list' })
   @Roles(Role.DEPARTMENT_MANAGER, Role.ORGANIZATION_ADMIN)
   @Get('skill-categories')
-  async getSkillsCategories(@Param('organization-id') orgId: string) {
+  async getSkillsCategories(@Param('orgId') orgId: string) {
     return await this.skillsService.getSkillsCategories(orgId);
   }
 
@@ -56,16 +56,16 @@ export class SkillsController {
   @ApiOkResponse({ description: 'Organization skills list' })
   @Roles(Role.EMPLOYEE)
   @Get()
-  async getSkills(@Param('organization-id') orgId: string) {
+  async getSkills(@Param('orgId') orgId: string) {
     return await this.skillsService.getSkills(orgId);
   }
 
   @ApiNotFoundResponse({ description: 'Skill category not found' })
   @ApiCreatedResponse({ description: 'Skill category updated' })
   @Roles(Role.DEPARTMENT_MANAGER, Role.ORGANIZATION_ADMIN)
-  @Put('skill-category/update/:category-skill-id')
+  @Put('skill-category/update/:categoryId')
   async updateSkillCategory(
-    @Param('category-skill-id') id: string,
+    @Param('categoryId') id: string,
     @Body() data: SkillCategoryDto,
   ) {
     return await this.skillsService.updateSkillCategory(id, data.name);
@@ -74,18 +74,18 @@ export class SkillsController {
   @ApiNotFoundResponse({ description: 'Skill Category not found' })
   @ApiOkResponse({ description: 'Skill category deleted' })
   @Roles(Role.DEPARTMENT_MANAGER, Role.ORGANIZATION_ADMIN)
-  @Delete('skill-category/delete/:category-skill-id')
-  async deleteSkillCategory(@Param('category-skill-id') id: string) {
+  @Delete('skill-category/delete/:categoryId')
+  async deleteSkillCategory(@Param('categoryId') id: string) {
     return await this.skillsService.deleteSkillCategory(id);
   }
 
   @ApiNotFoundResponse({ description: 'Skill category or employee not found' })
   @ApiCreatedResponse({ description: 'Skill created' })
   @Roles(Role.DEPARTMENT_MANAGER, Role.ORGANIZATION_ADMIN)
-  @Post('create-skill/:author-id')
+  @Post('create-skill/:authorId')
   async createSkill(
-    @Param('organization-id') orgId: string,
-    @Param('author-id') authorId: string,
+    @Param('orgId') orgId: string,
+    @Param('authorId') authorId: string,
     @Body() data: SkillsDto,
   ) {
     return await this.skillsService.createSkill(orgId, authorId, data);
@@ -97,10 +97,10 @@ export class SkillsController {
   })
   @ApiCreatedResponse({ description: 'Skill updated' })
   @Roles(Role.DEPARTMENT_MANAGER, Role.ORGANIZATION_ADMIN)
-  @Put('update-skill/:skill-id/author-id/:author-id')
+  @Put('update-skill/:skillId/author/:authorId')
   async updateSkill(
-    @Param('skill-id') skillId: string,
-    @Param('author-id') authorId: string,
+    @Param('skillId') skillId: string,
+    @Param('authorId') authorId: string,
     @Body() data: SkillsDto,
   ) {
     return await this.skillsService.updateSkill(skillId, authorId, data);
@@ -112,10 +112,10 @@ export class SkillsController {
     description: 'You have no rights to delete this skill',
   })
   @Roles(Role.DEPARTMENT_MANAGER, Role.ORGANIZATION_ADMIN)
-  @Delete('delete-skill/:skill-id/author-id/:author-id')
+  @Delete('delete-skill/:skillId/author/:authorId')
   async deleteSkill(
-    @Param('skill-id') skillId: string,
-    @Param('author-id') authorId: string,
+    @Param('skillId') skillId: string,
+    @Param('authorId') authorId: string,
   ) {
     return await this.skillsService.deleteSkill(skillId, authorId);
   }
@@ -130,12 +130,12 @@ export class SkillsController {
   @ApiCreatedResponse({ description: 'Skill assigned' })
   @Roles(Role.DEPARTMENT_MANAGER, Role.ORGANIZATION_ADMIN)
   @Put(
-    'assign-skill-to-department/:skill-id/dep-id/:dep-id/manager-id/:manager-id',
+    'assign-skill-to-department/:skillId/department/:depId/manager/:managerId',
   )
   async assignSkillToDepartment(
-    @Param('skill-id') skillId: string,
-    @Param('dep-id') depId: string,
-    @Param('manager-id') managerId: string,
+    @Param('skillId') skillId: string,
+    @Param('depId') depId: string,
+    @Param('managerId') managerId: string,
   ) {
     return await this.skillsService.assignSkillToDepartment(
       skillId,
@@ -154,12 +154,12 @@ export class SkillsController {
   @ApiOkResponse({ description: 'Skill assigned' })
   @Roles(Role.DEPARTMENT_MANAGER, Role.ORGANIZATION_ADMIN)
   @Put(
-    'delete-skill-from-department/:skill-id/dep-id/:dep-id/manager-id/:manager-id',
+    'delete-skill-from-department/:skillId/department/:depId/manager/:managerId',
   )
   async deleteSkillToDepartment(
-    @Param('skill-id') skillId: string,
-    @Param('dep-id') depId: string,
-    @Param('manager-id') managerId: string,
+    @Param('skillId') skillId: string,
+    @Param('depId') depId: string,
+    @Param('managerId') managerId: string,
   ) {
     return await this.skillsService.deleteSkillFromDepartment(
       skillId,
@@ -173,7 +173,7 @@ export class SkillsController {
   @Roles(Role.EMPLOYEE)
   @Post('assign-skill')
   async assignSkill(
-    @Param('organization-id') orgId: string,
+    @Param('orgId') orgId: string,
     @Body() skillAssign: AssignSkillDto,
   ) {
     return await this.skillsService.assignSkill(orgId, skillAssign);
@@ -184,13 +184,11 @@ export class SkillsController {
   })
   @ApiOkResponse({ description: 'Skill removed' })
   @Roles(Role.EMPLOYEE)
-  @Delete(
-    'delete-skill-from-employee/:skill-assignment-id/employee/:employee-id',
-  )
+  @Delete('delete-skill-from-employee/:assignmentId/employee/:employeeId')
   async removeSkillFromEmployee(
-    @Param('organization-id') orgId: string,
-    @Param('skill-assignment-id') skillAssignmentId: string,
-    @Param('employee-id') empId: string,
+    @Param('orgId') orgId: string,
+    @Param('assignmentId') skillAssignmentId: string,
+    @Param('employeeId') empId: string,
   ) {
     return this.skillsService.removeSkillFromEmployee(
       orgId,
