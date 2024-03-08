@@ -8,7 +8,7 @@ import { Employee } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
 import { PrismaService } from 'src/prisma/prisma.service';
-import { rolesDto } from 'src/employees/dto/assign-roles.dto';
+import { RolesDto } from 'src/employees/dto/assign-roles.dto';
 
 @Injectable()
 export class EmployeesService {
@@ -89,7 +89,7 @@ export class EmployeesService {
     return result;
   }
 
-  async assignRoles(orgId: string, id: string, roles: rolesDto) {
+  async assignRoles(orgId: string, id: string, roles: RolesDto) {
     const ROLE = [
       'PROJECT_MANAGER',
       'DEPARTMENT_MANAGER',

@@ -1,8 +1,8 @@
 import { HttpException, Injectable } from '@nestjs/common';
 
-import { skillsDto } from 'src/skills/dto/create-updates-skills.dto';
+import { SkillsDto } from 'src/skills/dto/create-updates-skills.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { assignSkillDto } from 'src/skills/dto/assign-skill.dto';
+import { AssignSkillDto } from 'src/skills/dto/assign-skill.dto';
 
 @Injectable()
 export class SkillsService {
@@ -77,7 +77,7 @@ export class SkillsService {
     });
   }
 
-  async createSkill(orgId: string, authorId: string, data: skillsDto) {
+  async createSkill(orgId: string, authorId: string, data: SkillsDto) {
     const author = await this.prismaService.employee.findUnique({
       where: { id: authorId, organizationId: orgId },
     });
@@ -99,7 +99,7 @@ export class SkillsService {
     });
   }
 
-  async updateSkill(skillId: string, authorId: string, data: skillsDto) {
+  async updateSkill(skillId: string, authorId: string, data: SkillsDto) {
     const skill = await this.prismaService.skill.findUnique({
       where: { id: skillId },
     });
@@ -220,7 +220,7 @@ export class SkillsService {
     });
   }
 
-  async assignSkill(orgId: string, skillAssign: assignSkillDto) {
+  async assignSkill(orgId: string, skillAssign: AssignSkillDto) {
     const org = await this.prismaService.organization.findUnique({
       where: { id: orgId },
     });
