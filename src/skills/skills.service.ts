@@ -40,9 +40,9 @@ export class SkillsService {
     });
     if (!org) throw new HttpException('Organization not found', 404);
 
-    return await this.prismaService.skillCategory.findMany({
+    return await this.prismaService.skill.findMany({
       where: { organizationId: orgId },
-      include: { skills: true },
+      include: { category: true },
     });
   }
 

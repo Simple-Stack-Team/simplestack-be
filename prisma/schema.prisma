@@ -18,6 +18,7 @@ model Organization {
   skills              SkillCategory[]
   orgSkills           Skill[]
   projects            Project[]
+  employeeProject     EmployeeProject[]
 }
 
 model TeamRole {
@@ -42,6 +43,7 @@ model Employee {
   departmentId        String?         @db.ObjectId
   createdSkills       Skill[]
   personalSkills      SkillAssignment[]
+  projects            EmployeeProject[]
 }
 
 model Department {
@@ -102,6 +104,21 @@ model Project {
   description         String
   technologyStack     String[]
   teamRoles           ProjectTeamRole[]
+  members             EmployeeProject[]
+}
+
+model EmployeeProject {
+  id                  String          @id @default(auto()) @map("_id") @db.ObjectId
+  organization        Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade) 
+  organizationId      String          @db.ObjectId
+  project             Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId           String          @db.ObjectId
+  employee            Employee        @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  employeeId          String          @db.ObjectId
+  employeeRoles       String[]
+  workHours           Int
+  startWork           DateTime
+  endWork             DateTime?
 }
 
 model ProjectTeamRole {
