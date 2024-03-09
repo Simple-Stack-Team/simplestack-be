@@ -7,6 +7,7 @@ import {
   Put,
   Delete,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -24,6 +25,7 @@ import { Role } from 'src/auth/types/role.types';
 import { ProjectsService } from 'src/projects/projects.service';
 import { CreateProjectDto } from 'src/projects/dtos/create-project.dto';
 import { AssignmentProposalDto } from 'src/projects/dtos/assignment-proposal.dto';
+import { TeamFinderQueryDto } from 'src/projects/dtos/team-finder.dto';
 
 @ApiBearerAuth()
 @ApiTags('projects')
@@ -92,5 +94,16 @@ export class ProjectsController {
       empId,
       data,
     );
+  }
+
+  @Roles(Role.PROJECT_MANAGER)
+  @ApiOkResponse({ description: 'Project team finder list' })
+  @Get(':id/teamfinder')
+  async teamFinder(
+    @Param('orgId') orgId: string,
+    @Param('id') projectId: string,
+    @Query() query: TeamFinderQueryDto,
+  ) {
+    return await this.projectsService.teamFinder(orgId, projectId, query);
   }
 }

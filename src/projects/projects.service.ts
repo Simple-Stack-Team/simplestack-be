@@ -7,6 +7,7 @@ import {
 } from 'src/projects/dtos/create-project.dto';
 import { ProjectStatus } from 'src/projects/types/project-types';
 import { AssignmentProposalDto } from 'src/projects/dtos/assignment-proposal.dto';
+import { TeamFinderQueryDto } from 'src/projects/dtos/team-finder.dto';
 
 @Injectable()
 export class ProjectsService {
@@ -185,6 +186,150 @@ export class ProjectsService {
     });
   }
 
+  async teamFinder(
+    orgId: string,
+    projectId: string,
+    query: TeamFinderQueryDto,
+  ) {
+    const org = await this.prismaService.organization.findUnique({
+      where: { id: orgId },
+    });
+
+    if (!org) throw new NotFoundException('Organization not found');
+
+    const project = await this.getProject(projectId);
+
+    const technologyStack = project.technologyStack.map((skill) =>
+      skill.toLowerCase(),
+    );
+
+    const employees = await this.prismaService.employee.findMany({
+      where: {
+        organizationId: orgId,
+      },
+      select: {
+        id: true,
+        name: true,
+        personalSkills: {
+          include: {
+            skill: {
+              select: {
+                name: true,
+                id: true,
+              },
+            },
+          },
+        },
+        projects: {
+          include: {
+            project: {
+              include: {
+                teamRoles: {
+                  include: {
+                    teamRole: {
+                      select: {
+                        name: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    let fittingEmployees = employees.filter((employee) => {
+      let personalSkillsLowerCase = employee.personalSkills.map(
+        (skillAssignment) => skillAssignment.skill.name.toLowerCase(),
+      );
+
+      if (query.includePastProjects) {
+        const pastTechnlogyStack = employee.projects.flatMap(
+          (pastProject) => pastProject.project.technologyStack,
+        );
+
+        const pastTeamRoles = employee.projects.flatMap((pastProject) =>
+          pastProject.project.teamRoles.map(
+            (teamRole) => teamRole.teamRole.name,
+          ),
+        );
+
+        personalSkillsLowerCase = personalSkillsLowerCase.concat(
+          pastTechnlogyStack.map((role) => role.toLowerCase()),
+          pastTeamRoles.map((role) => role.toLowerCase()),
+        );
+      }
+
+      const isFitSkillOrPastRole = personalSkillsLowerCase.some((skill) =>
+        technologyStack.includes(skill),
+      );
+
+      return isFitSkillOrPastRole;
+    });
+
+    if (
+      query.includePartiallyAvailable ||
+      query.includeCloseToFinish ||
+      query.includeUnavailable
+    ) {
+      const fullyAvailableEmployees = [];
+
+      if (query.includePartiallyAvailable) {
+        fittingEmployees = fittingEmployees.filter((employee) => {
+          const totalHours = employee.projects.reduce(
+            (totalHours, project) => totalHours + project.workHours,
+            0,
+          );
+          if (totalHours < 8) return true;
+          else {
+            fullyAvailableEmployees.push(employee);
+            return false;
+          }
+        });
+      }
+
+      if (query.includeCloseToFinish) {
+        const maxWeeks = query.deadlineWeeks || 6;
+        const deadlineThreshold = new Date();
+        deadlineThreshold.setDate(deadlineThreshold.getDate() + 7 * maxWeeks);
+        fittingEmployees = fittingEmployees.filter((employee) => {
+          if (
+            employee.projects.some(
+              (employeeProject) =>
+                employeeProject.project.deadlineDate &&
+                employeeProject.project.deadlineDate <= deadlineThreshold,
+            )
+          )
+            return true;
+          else {
+            fullyAvailableEmployees.push(employee);
+            return false;
+          }
+        });
+      }
+
+      if (query.includeUnavailable) {
+        fittingEmployees = fittingEmployees.filter((employee) => {
+          const totalHours = employee.projects.reduce(
+            (totalHours, project) => totalHours + project.workHours,
+            0,
+          );
+          if (totalHours === 8) return true;
+          else {
+            fullyAvailableEmployees.push(employee);
+            return false;
+          }
+        });
+      }
+
+      fittingEmployees.push(...fullyAvailableEmployees);
+    }
+
+    return fittingEmployees;
+  }
+
   async AssignmentProposal(
     orgId: string,
     projectId: string,
@@ -217,7 +362,7 @@ export class ProjectsService {
       data: {
         workHours: data.workHours,
         projectId: projectId,
-        teamRole: data.teamRoles,
+        teamRoles: data.teamRoles,
         comments: data.comments,
         employeeId: empId,
       },
