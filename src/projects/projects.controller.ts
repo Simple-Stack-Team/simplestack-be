@@ -83,8 +83,14 @@ export class ProjectsController {
   async AssignmentProposal(
     @Param('projectId') projectId: string,
     @Param('employeeId') empId: string,
+    @Param('orgId') orgId: string,
     @Body() data: AssignmentProposalDto,
   ) {
-    return this.projectsService.AssignmentProposal(projectId, empId, data);
+    return await this.projectsService.AssignmentProposal(
+      orgId,
+      projectId,
+      empId,
+      data,
+    );
   }
 }

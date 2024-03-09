@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 
 import { SkillsDto } from 'src/skills/dto/create-updates-skills.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -44,6 +44,20 @@ export class SkillsService {
       where: { organizationId: orgId },
       include: { category: true },
     });
+  }
+
+  async getSkillById(id: string) {
+    const skill = await this.prismaService.skill.findUnique({
+      where: { id },
+      include: {
+        author: true,
+        departments: true,
+        category: true,
+        organization: true,
+      },
+    });
+    if (!skill) throw new NotFoundException('Skill not found');
+    return skill;
   }
 
   async updateSkillCategory(id: string, name: string) {

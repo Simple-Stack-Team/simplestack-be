@@ -186,21 +186,24 @@ export class ProjectsService {
   }
 
   async AssignmentProposal(
+    orgId: string,
     projectId: string,
     empId: string,
     data: AssignmentProposalDto,
   ) {
-    const employee = this.prismaService.employee.findUnique({
+    const employee = await this.prismaService.employee.findUnique({
       where: { id: empId },
     });
     if (!employee) throw new HttpException('Employee not found', 404);
-    const project = this.prismaService.project.findUnique({
+    const project = await this.prismaService.project.findUnique({
       where: { id: projectId },
       include: { teamRoles: true },
     });
     if (!project) throw new HttpException('Employee not found', 404);
 
-    const teamRole = await this.prismaService.teamRole.findMany();
+    const teamRole = await this.prismaService.teamRole.findMany({
+      where: { organizationId: orgId },
+    });
     const roles = [];
     teamRole.filter((role) => {
       roles.push(role.name);
@@ -210,7 +213,7 @@ export class ProjectsService {
         throw new HttpException('Team role not found', 404);
       }
     });
-    return this.prismaService.assignmentProposal.create({
+    return await this.prismaService.assignmentProposal.create({
       data: {
         workHours: data.workHours,
         projectId: projectId,

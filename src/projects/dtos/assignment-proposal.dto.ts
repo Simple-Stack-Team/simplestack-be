@@ -2,6 +2,7 @@ import {
   ArrayNotEmpty,
   IsArray,
   IsInt,
+  IsNotEmpty,
   IsString,
   Max,
   Min,
@@ -15,6 +16,8 @@ export class AssignmentProposalDto {
 
   @IsArray()
   @ArrayNotEmpty()
+  @IsString({ each: true })
+  @IsNotEmpty({ each: true })
   teamRoles: string[];
 
   @IsString()
