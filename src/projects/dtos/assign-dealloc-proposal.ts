@@ -1,6 +1,7 @@
 import {
   ArrayNotEmpty,
   IsArray,
+  IsBoolean,
   IsInt,
   IsNotEmpty,
   IsString,
@@ -28,4 +29,10 @@ export class DeallocationProposalDto {
   @IsString()
   @IsNotEmpty()
   reason: string;
+}
+
+export class confirmDto {
+  @IsBoolean()
+  @IsNotEmpty()
+  confirm: boolean;
 }
