@@ -10,7 +10,7 @@ import { TeamFinderQueryDto } from 'src/projects/dtos/team-finder.dto';
 import {
   AssignmentProposalDto,
   DeallocationProposalDto,
-  confirmDto,
+  ConfirmDto,
 } from 'src/projects/dtos/assign-dealloc-proposal';
 
 @Injectable()
@@ -91,6 +91,12 @@ export class ProjectsService {
           },
         },
         organization: true,
+        members: true,
+        assignmentProposal: {
+          include: {
+            employee: true,
+          },
+        },
       },
     });
 
@@ -423,7 +429,7 @@ export class ProjectsService {
   async assignmentConfirmation(
     orgId: string,
     assignmentId: string,
-    confirm: confirmDto,
+    confirm: ConfirmDto,
   ) {
     const org = await this.prismaService.organization.findUnique({
       where: {
@@ -474,7 +480,7 @@ export class ProjectsService {
     orgId: string,
     deallocateId: string,
     empProjectId: string,
-    confirm: confirmDto,
+    confirm: ConfirmDto,
   ) {
     const org = await this.prismaService.organization.findUnique({
       where: {
@@ -515,5 +521,36 @@ export class ProjectsService {
     });
 
     return employeeProject;
+  }
+
+  async getProjectTeam(projectId: string) {
+    const project = await this.getProject(projectId);
+
+    const proposedMembers = project.assignmentProposal.map(
+      (assignment) => assignment.employee,
+    );
+
+    const members = await this.prismaService.employeeProject.findMany({
+      where: {
+        projectId,
+      },
+      include: {
+        employee: true,
+      },
+    });
+
+    const activeMembers = members
+      .filter((member) => member.endWork == null)
+      .map((member) => member.employee);
+
+    const pastMembers = members
+      .filter((member) => member.endWork != null)
+      .map((member) => member.employee);
+
+    return {
+      proposedMembers,
+      activeMembers,
+      pastMembers,
+    };
   }
 }

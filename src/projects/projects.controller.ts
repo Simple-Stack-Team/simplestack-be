@@ -28,7 +28,7 @@ import { TeamFinderQueryDto } from 'src/projects/dtos/team-finder.dto';
 import {
   AssignmentProposalDto,
   DeallocationProposalDto,
-  confirmDto,
+  ConfirmDto,
 } from 'src/projects/dtos/assign-dealloc-proposal';
 
 @ApiBearerAuth()
@@ -138,7 +138,7 @@ export class ProjectsController {
   async assignmentConfirmation(
     @Param('orgId') orgId: string,
     @Param('assignmentId') assignmentId: string,
-    @Body() confirm: confirmDto,
+    @Body() confirm: ConfirmDto,
   ) {
     return await this.projectsService.assignmentConfirmation(
       orgId,
@@ -154,7 +154,7 @@ export class ProjectsController {
     @Param('orgId') orgId: string,
     @Param('deallocateId') deallocateId: string,
     @Param('empProjectId') empProjectId: string,
-    @Body() confirm: confirmDto,
+    @Body() confirm: ConfirmDto,
   ) {
     return await this.projectsService.deallocationConfirmation(
       orgId,
@@ -162,5 +162,11 @@ export class ProjectsController {
       empProjectId,
       confirm,
     );
+  }
+
+  @ApiOkResponse({ description: 'Project team view' })
+  @Get(':id/team')
+  async getProjectTeam(@Param('id') id: string) {
+    return await this.projectsService.getProjectTeam(id);
   }
 }
