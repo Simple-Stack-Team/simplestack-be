@@ -24,8 +24,11 @@ import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/auth/types/role.types';
 import { ProjectsService } from 'src/projects/projects.service';
 import { CreateProjectDto } from 'src/projects/dtos/create-project.dto';
-import { AssignmentProposalDto } from 'src/projects/dtos/assignment-proposal.dto';
 import { TeamFinderQueryDto } from 'src/projects/dtos/team-finder.dto';
+import {
+  AssignmentProposalDto,
+  DeallocationProposalDto,
+} from 'src/projects/dtos/assign-dealloc-proposal';
 
 @ApiBearerAuth()
 @ApiTags('projects')
@@ -80,15 +83,15 @@ export class ProjectsController {
   }
 
   @ApiOkResponse({ description: 'Assignment proposal sent' })
-  @Roles(Role.PROJECT_MANAGER, Role.ORGANIZATION_ADMIN)
-  @Post(':projectId/employee/:employeeId')
-  async AssignmentProposal(
+  @Roles(Role.PROJECT_MANAGER)
+  @Post(':projectId/employee/:employeeId/assignment')
+  async assignmentProposal(
     @Param('projectId') projectId: string,
     @Param('employeeId') empId: string,
     @Param('orgId') orgId: string,
     @Body() data: AssignmentProposalDto,
   ) {
-    return await this.projectsService.AssignmentProposal(
+    return await this.projectsService.assignmentProposal(
       orgId,
       projectId,
       empId,
@@ -105,5 +108,19 @@ export class ProjectsController {
     @Query() query: TeamFinderQueryDto,
   ) {
     return await this.projectsService.teamFinder(orgId, projectId, query);
+  }
+  @ApiOkResponse({ description: 'Deallocation proposal sent' })
+  @Roles(Role.PROJECT_MANAGER)
+  @Post(':projectId/employee/:employeeId/deallocation')
+  async deallocationProposal(
+    @Param('projectId') projectId: string,
+    @Param('employeeId') empId: string,
+    @Body() data: DeallocationProposalDto,
+  ) {
+    return await this.projectsService.deallocationProposal(
+      projectId,
+      empId,
+      data,
+    );
   }
 }

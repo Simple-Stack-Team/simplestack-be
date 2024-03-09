@@ -45,6 +45,7 @@ model Employee {
   personalSkills      SkillAssignment[]
   projects            EmployeeProject[]
   assignmentProposal  AssignmentProposal[]
+  deallocationProposal DeallocationProposal[]
 }
 
 model Department {
@@ -107,6 +108,7 @@ model Project {
   teamRoles           ProjectTeamRole[]
   members             EmployeeProject[]
   assignmentProposal  AssignmentProposal[]
+  DeallocationProposal DeallocationProposal[]
 }
 
 model EmployeeProject {
@@ -137,10 +139,20 @@ model AssignmentProposal {
   teamRoles           String[]
   projectId           String          @db.ObjectId
   project             Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  employee            Employee        @relation(fields: [employeeId], references: [id])
+  employee            Employee        @relation(fields: [employeeId], references: [id], onDelete: Cascade)
   employeeId          String          @db.ObjectId
   workHours           Int
   comments            String
+}
+
+model  DeallocationProposal {
+  id                  String          @id @default(auto()) @map("_id") @db.ObjectId
+  projectId           String          @db.ObjectId
+  project             Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  employee            Employee        @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  employeeId          String          @db.ObjectId
+  isConfirmed         Boolean         @default(false)
+  reason              String
 }
 
 enum Role {

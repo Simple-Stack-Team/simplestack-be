@@ -23,3 +23,9 @@ export class AssignmentProposalDto {
   @IsString()
   comments: string;
 }
+
+export class DeallocationProposalDto {
+  @IsString()
+  @IsNotEmpty()
+  reason: string;
+}
