@@ -7,6 +7,7 @@ import {
   Put,
   Delete,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -23,6 +24,7 @@ import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/auth/types/role.types';
 import { ProjectsService } from 'src/projects/projects.service';
 import { CreateProjectDto } from 'src/projects/dtos/create-project.dto';
+import { TeamFinderQueryDto } from 'src/projects/dtos/team-finder.dto';
 import {
   AssignmentProposalDto,
   DeallocationProposalDto,
@@ -97,6 +99,16 @@ export class ProjectsController {
     );
   }
 
+  @Roles(Role.PROJECT_MANAGER)
+  @ApiOkResponse({ description: 'Project team finder list' })
+  @Get(':id/teamfinder')
+  async teamFinder(
+    @Param('orgId') orgId: string,
+    @Param('id') projectId: string,
+    @Query() query: TeamFinderQueryDto,
+  ) {
+    return await this.projectsService.teamFinder(orgId, projectId, query);
+  }
   @ApiOkResponse({ description: 'Deallocation proposal sent' })
   @Roles(Role.PROJECT_MANAGER)
   @Post(':projectId/employee/:employeeId/deallocation')

@@ -136,7 +136,7 @@ model ProjectTeamRole {
 
 model AssignmentProposal {
   id                  String          @id @default(auto()) @map("_id") @db.ObjectId
-  teamRole            String[]
+  teamRoles           String[]
   projectId           String          @db.ObjectId
   project             Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
   employee            Employee        @relation(fields: [employeeId], references: [id], onDelete: Cascade)
