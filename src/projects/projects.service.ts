@@ -245,11 +245,8 @@ export class ProjectsService {
     });
     if (!employee) throw new NotFoundException('Employee not found');
 
-    const members = project.members;
-    const membersId = [];
-    members.filter((data) => {
-      membersId.push(data.employeeId);
-    });
+    const membersId = project.members.map((m) => m.employeeId);
+
     if (!membersId.includes(empId))
       throw new HttpException('Employee is not a part of this project', 409);
 
