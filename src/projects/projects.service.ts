@@ -9,6 +9,7 @@ import { ProjectStatus } from 'src/projects/types/project-types';
 import {
   AssignmentProposalDto,
   DeallocationProposalDto,
+  confirmDto,
 } from 'src/projects/dtos/assign-dealloc-proposal';
 
 @Injectable()
@@ -220,9 +221,10 @@ export class ProjectsService {
       data: {
         workHours: data.workHours,
         projectId: projectId,
-        teamRole: data.teamRoles,
+        teamRoles: data.teamRoles,
         comments: data.comments,
         employeeId: empId,
+        departmentId: employee.departmentId,
       },
     });
   }
@@ -255,7 +257,118 @@ export class ProjectsService {
         employeeId: empId,
         projectId: projectId,
         reason: data.reason,
+        departmentId: employee.departmentId,
       },
     });
+  }
+
+  async getProjectProposal(depId: string) {
+    const department = await this.prismaService.department.findMany({
+      where: { id: depId },
+      include: { assignmentProposal: true, deallocationProposal: true },
+    });
+    if (!department) throw new NotFoundException('Department not found');
+
+    const assignments = department.map((data) => data.assignmentProposal);
+    const deallocations = department.map((data) => data.deallocationProposal);
+
+    return [assignments, deallocations];
+  }
+
+  async assignmentConfirmation(
+    orgId: string,
+    assignmentId: string,
+    confirm: confirmDto,
+  ) {
+    const org = await this.prismaService.organization.findUnique({
+      where: {
+        id: orgId,
+      },
+    });
+
+    if (!org) throw new NotFoundException('Organization not found');
+
+    const assignment = await this.prismaService.assignmentProposal.findUnique({
+      where: {
+        id: assignmentId,
+      },
+      include: {
+        project: true,
+        employee: true,
+      },
+    });
+
+    if (!assignment) throw new NotFoundException('Assignment not found');
+
+    if (!confirm.confirm) {
+      return await this.prismaService.assignmentProposal.delete({
+        where: { id: assignmentId },
+      });
+    }
+
+    const employeeProject = await this.prismaService.employeeProject.create({
+      data: {
+        organizationId: orgId,
+        projectId: assignment.projectId,
+        employeeId: assignment.employeeId,
+        startWork: new Date().toISOString(),
+        endWork: null,
+        workHours: assignment.workHours,
+        employeeRoles: [...assignment.teamRoles],
+      },
+    });
+
+    await this.prismaService.assignmentProposal.delete({
+      where: { id: assignmentId },
+    });
+
+    return employeeProject;
+  }
+
+  async deallocationConfirmation(
+    orgId: string,
+    deallocateId: string,
+    empProjectId: string,
+    confirm: confirmDto,
+  ) {
+    const org = await this.prismaService.organization.findUnique({
+      where: {
+        id: orgId,
+      },
+    });
+
+    if (!org) throw new NotFoundException('Organization not found');
+
+    const deallocation =
+      await this.prismaService.deallocationProposal.findUnique({
+        where: {
+          id: deallocateId,
+        },
+        include: {
+          project: true,
+          employee: true,
+        },
+      });
+
+    if (!deallocation) throw new NotFoundException('Assignment not found');
+
+    if (!confirm.confirm) {
+      return await this.prismaService.deallocationProposal.delete({
+        where: { id: deallocateId },
+      });
+    }
+
+    const employeeProject = await this.prismaService.employeeProject.update({
+      where: { id: empProjectId },
+      data: {
+        endWork: new Date().toISOString(),
+      },
+    });
+
+    await this.prismaService.deallocationProposal.delete({
+      where: { id: deallocateId },
+    });
+
+    return employeeProject;
   }
 }

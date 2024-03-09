@@ -26,6 +26,7 @@ import { CreateProjectDto } from 'src/projects/dtos/create-project.dto';
 import {
   AssignmentProposalDto,
   DeallocationProposalDto,
+  confirmDto,
 } from 'src/projects/dtos/assign-dealloc-proposal';
 
 @ApiBearerAuth()
@@ -109,6 +110,45 @@ export class ProjectsController {
       projectId,
       empId,
       data,
+    );
+  }
+
+  @ApiOkResponse({ description: 'Assignment and deallocation proposals list' })
+  @Roles(Role.DEPARTMENT_MANAGER)
+  @Get('/department/:depId/proposals')
+  async getProjectProposal(@Param('depId') depId: string) {
+    return await this.projectsService.getProjectProposal(depId);
+  }
+
+  @ApiOkResponse({ description: 'Response was sent' })
+  @Roles(Role.PROJECT_MANAGER)
+  @Put('/assign-employee/:assignmentId')
+  async assignmentConfirmation(
+    @Param('orgId') orgId: string,
+    @Param('assignmentId') assignmentId: string,
+    @Body() confirm: confirmDto,
+  ) {
+    return await this.projectsService.assignmentConfirmation(
+      orgId,
+      assignmentId,
+      confirm,
+    );
+  }
+
+  @ApiOkResponse({ description: 'Response was sent' })
+  @Roles(Role.PROJECT_MANAGER)
+  @Put('/deallocate-employee/:deallocateId/employee-project/:empProjectId')
+  async deallocationConfirmation(
+    @Param('orgId') orgId: string,
+    @Param('deallocateId') deallocateId: string,
+    @Param('empProjectId') empProjectId: string,
+    @Body() confirm: confirmDto,
+  ) {
+    return await this.projectsService.deallocationConfirmation(
+      orgId,
+      deallocateId,
+      empProjectId,
+      confirm,
     );
   }
 }
