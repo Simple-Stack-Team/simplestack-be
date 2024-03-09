@@ -44,6 +44,7 @@ model Employee {
   createdSkills       Skill[]
   personalSkills      SkillAssignment[]
   projects            EmployeeProject[]
+  assignmentProposal  AssignmentProposal[]
 }
 
 model Department {
@@ -105,6 +106,7 @@ model Project {
   technologyStack     String[]
   teamRoles           ProjectTeamRole[]
   members             EmployeeProject[]
+  assignmentProposal  AssignmentProposal[]
 }
 
 model EmployeeProject {
@@ -128,6 +130,17 @@ model ProjectTeamRole {
   projectId           String          @db.ObjectId
   project             Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
   nrOfMembers         Int
+}
+
+model AssignmentProposal {
+  id                  String          @id @default(auto()) @map("_id") @db.ObjectId
+  teamRole            String[]
+  projectId           String          @db.ObjectId
+  project             Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  employee            Employee        @relation(fields: [employeeId], references: [id])
+  employeeId          String          @db.ObjectId
+  workHours           Int
+  comments            String
 }
 
 enum Role {

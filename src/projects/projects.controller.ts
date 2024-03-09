@@ -23,6 +23,7 @@ import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/auth/types/role.types';
 import { ProjectsService } from 'src/projects/projects.service';
 import { CreateProjectDto } from 'src/projects/dtos/create-project.dto';
+import { AssignmentProposalDto } from 'src/projects/dtos/assignment-proposal.dto';
 
 @ApiBearerAuth()
 @ApiTags('projects')
@@ -74,5 +75,16 @@ export class ProjectsController {
   @Delete(':id')
   async deleteProject(@Param('id') id: string) {
     return await this.projectsService.deleteProject(id);
+  }
+
+  @ApiOkResponse({ description: 'Assignment proposal sent' })
+  @Roles(Role.PROJECT_MANAGER, Role.ORGANIZATION_ADMIN)
+  @Post(':projectId/employee/:employeeId')
+  async AssignmentProposal(
+    @Param('projectId') projectId: string,
+    @Param('employeeId') empId: string,
+    @Body() data: AssignmentProposalDto,
+  ) {
+    return this.projectsService.AssignmentProposal(projectId, empId, data);
   }
 }

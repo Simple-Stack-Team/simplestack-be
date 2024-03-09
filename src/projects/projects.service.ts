@@ -6,6 +6,7 @@ import {
   ProjectTeamRoleDto,
 } from 'src/projects/dtos/create-project.dto';
 import { ProjectStatus } from 'src/projects/types/project-types';
+import { AssignmentProposalDto } from 'src/projects/dtos/assignment-proposal.dto';
 
 @Injectable()
 export class ProjectsService {
@@ -180,6 +181,42 @@ export class ProjectsService {
     return await this.prismaService.project.delete({
       where: {
         id,
+      },
+    });
+  }
+
+  async AssignmentProposal(
+    projectId: string,
+    empId: string,
+    data: AssignmentProposalDto,
+  ) {
+    const employee = this.prismaService.employee.findUnique({
+      where: { id: empId },
+    });
+    if (!employee) throw new HttpException('Employee not found', 404);
+    const project = this.prismaService.project.findUnique({
+      where: { id: projectId },
+      include: { teamRoles: true },
+    });
+    if (!project) throw new HttpException('Employee not found', 404);
+
+    const teamRole = await this.prismaService.teamRole.findMany();
+    const roles = [];
+    teamRole.filter((role) => {
+      roles.push(role.name);
+    });
+    data.teamRoles.filter((r) => {
+      if (!roles.includes(r)) {
+        throw new HttpException('Team role not found', 404);
+      }
+    });
+    return this.prismaService.assignmentProposal.create({
+      data: {
+        workHours: data.workHours,
+        projectId: projectId,
+        teamRole: data.teamRoles,
+        comments: data.comments,
+        employeeId: empId,
       },
     });
   }
