@@ -60,6 +60,14 @@ export class SkillsController {
     return await this.skillsService.getSkills(orgId);
   }
 
+  @ApiNotFoundResponse({ description: 'Skill not found' })
+  @ApiOkResponse({ description: 'Skill details' })
+  @Roles(Role.EMPLOYEE)
+  @Get(':id')
+  async getSkillById(@Param('id') id: string) {
+    return await this.skillsService.getSkillById(id);
+  }
+
   @ApiNotFoundResponse({ description: 'Skill category not found' })
   @ApiCreatedResponse({ description: 'Skill category updated' })
   @Roles(Role.DEPARTMENT_MANAGER, Role.ORGANIZATION_ADMIN)
