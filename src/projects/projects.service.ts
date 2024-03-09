@@ -6,7 +6,10 @@ import {
   ProjectTeamRoleDto,
 } from 'src/projects/dtos/create-project.dto';
 import { ProjectStatus } from 'src/projects/types/project-types';
-import { AssignmentProposalDto } from 'src/projects/dtos/assignment-proposal.dto';
+import {
+  AssignmentProposalDto,
+  DeallocationProposalDto,
+} from 'src/projects/dtos/assign-dealloc-proposal';
 
 @Injectable()
 export class ProjectsService {
@@ -185,7 +188,7 @@ export class ProjectsService {
     });
   }
 
-  async AssignmentProposal(
+  async assignmentProposal(
     orgId: string,
     projectId: string,
     empId: string,
@@ -194,12 +197,12 @@ export class ProjectsService {
     const employee = await this.prismaService.employee.findUnique({
       where: { id: empId },
     });
-    if (!employee) throw new HttpException('Employee not found', 404);
+    if (!employee) throw new NotFoundException('Employee not found');
     const project = await this.prismaService.project.findUnique({
       where: { id: projectId },
       include: { teamRoles: true },
     });
-    if (!project) throw new HttpException('Employee not found', 404);
+    if (!project) throw new NotFoundException('Employee not found');
 
     const teamRole = await this.prismaService.teamRole.findMany({
       where: { organizationId: orgId },
@@ -210,7 +213,7 @@ export class ProjectsService {
     });
     data.teamRoles.filter((r) => {
       if (!roles.includes(r)) {
-        throw new HttpException('Team role not found', 404);
+        throw new NotFoundException('Team role not found');
       }
     });
     return await this.prismaService.assignmentProposal.create({
@@ -220,6 +223,38 @@ export class ProjectsService {
         teamRole: data.teamRoles,
         comments: data.comments,
         employeeId: empId,
+      },
+    });
+  }
+
+  async deallocationProposal(
+    projectId: string,
+    empId: string,
+    data: DeallocationProposalDto,
+  ) {
+    const project = await this.prismaService.project.findUnique({
+      where: { id: projectId },
+      include: {
+        members: true,
+      },
+    });
+    if (!project) throw new NotFoundException('Project not found');
+
+    const employee = await this.prismaService.employee.findUnique({
+      where: { id: empId },
+    });
+    if (!employee) throw new NotFoundException('Employee not found');
+
+    const membersId = project.members.map((m) => m.employeeId);
+
+    if (!membersId.includes(empId))
+      throw new HttpException('Employee is not a part of this project', 409);
+
+    return await this.prismaService.deallocationProposal.create({
+      data: {
+        employeeId: empId,
+        projectId: projectId,
+        reason: data.reason,
       },
     });
   }
