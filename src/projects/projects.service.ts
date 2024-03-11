@@ -651,4 +651,39 @@ export class ProjectsService {
 
     return departmentProjects;
   }
+
+  async deallocationProposalUpdate(deallocationId: string, reason: string) {
+    const deallocPropasal =
+      await this.prismaService.deallocationProposal.findUnique({
+        where: { id: deallocationId },
+      });
+    if (!deallocPropasal) throw new NotFoundException('Proposal not found');
+
+    return await this.prismaService.deallocationProposal.update({
+      where: { id: deallocationId },
+      data: {
+        reason,
+      },
+    });
+  }
+
+  async assignmentProposalUpdate(
+    assignmentId: string,
+    data: AssignmentProposalDto,
+  ) {
+    const assignPropasal =
+      await this.prismaService.assignmentProposal.findUnique({
+        where: { id: assignmentId },
+      });
+    if (!assignPropasal) throw new NotFoundException('Proposal not found');
+
+    return await this.prismaService.assignmentProposal.update({
+      where: { id: assignmentId },
+      data: {
+        comments: data.comments,
+        workHours: data.workHours,
+        teamRoles: data.teamRoles,
+      },
+    });
+  }
 }
