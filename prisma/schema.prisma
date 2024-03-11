@@ -46,6 +46,7 @@ model Employee {
   projects            EmployeeProject[]
   assignmentProposal  AssignmentProposal[]
   deallocationProposal DeallocationProposal[]
+  createdProjects     Project[]
 }
 
 model Department {
@@ -110,7 +111,9 @@ model Project {
   teamRoles           ProjectTeamRole[]
   members             EmployeeProject[]
   assignmentProposal  AssignmentProposal[]
-  DeallocationProposal DeallocationProposal[]
+  deallocationProposal DeallocationProposal[]
+  authorId            String        @db.ObjectId
+  author              Employee      @relation(fields: [authorId], references: [id])
 }
 
 model EmployeeProject {

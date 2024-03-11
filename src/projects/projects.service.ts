@@ -1,4 +1,12 @@
-import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  HttpException,
+  Inject,
+  Injectable,
+  NotFoundException,
+  Scope,
+} from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
 
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
@@ -13,20 +21,17 @@ import {
   ConfirmDto,
 } from 'src/projects/dtos/assign-dealloc-proposal';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class ProjectsService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    @Inject(REQUEST) private request: Request,
+    private readonly prismaService: PrismaService,
+  ) {}
 
-  async getAllProjects(orgId: string) {
-    const org = await this.prismaService.organization.findUnique({
-      where: { id: orgId },
-    });
-
-    if (!org) throw new NotFoundException('Organization not found');
-
+  async getAllManagerProjects() {
     return await this.prismaService.project.findMany({
       where: {
-        organizationId: orgId,
+        authorId: this.request.user.sub,
       },
     });
   }
@@ -58,6 +63,7 @@ export class ProjectsService {
       status: project.status,
       description: project.description,
       technologyStack: project.technologyStack,
+      author: { connect: { id: this.request.user.id } },
     };
 
     const createdProject = await this.prismaService.project.create({
