@@ -60,7 +60,7 @@ export class ProjectsController {
     return await this.projectsService.createProject(orgId, createProjectDto);
   }
 
-  @ApiOkResponse({ description: 'Project view' })
+  @ApiOkResponse({ description: 'Project detailed view' })
   @Get(':id')
   async getProject(@Param('id') id: string) {
     return await this.projectsService.getProject(id);
@@ -168,5 +168,21 @@ export class ProjectsController {
   @Get(':id/team')
   async getProjectTeam(@Param('id') id: string) {
     return await this.projectsService.getProjectTeam(id);
+  }
+
+  @ApiOkResponse({
+    description: 'Employee / Project manager active and past projects',
+  })
+  @Get('employee/:id')
+  async getEmployeeProjects(@Param('id') id: string) {
+    return await this.projectsService.getEmployeeProjects(id);
+  }
+
+  @ApiOkResponse({
+    description: 'Department members projects',
+  })
+  @Get('department/:id')
+  async getDepartmentProjects(@Param('id') id: string) {
+    return await this.projectsService.getDepartmentProjects(id);
   }
 }

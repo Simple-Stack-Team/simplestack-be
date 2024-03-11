@@ -553,4 +553,96 @@ export class ProjectsService {
       pastMembers,
     };
   }
+
+  async getEmployeeProjects(employeeId: string) {
+    const employee = await this.prismaService.employee.findUnique({
+      where: { id: employeeId },
+    });
+
+    if (!employee) throw new NotFoundException('Employee not found');
+
+    const employeeProjects = await this.prismaService.employeeProject.findMany({
+      where: {
+        employeeId,
+      },
+      select: {
+        id: true,
+        employee: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        endWork: true,
+        employeeRoles: true,
+        project: {
+          select: {
+            id: true,
+            technologyStack: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    const currentProjects = employeeProjects.filter(
+      (project) => project.endWork == null,
+    );
+
+    const pastProjects = employeeProjects.filter(
+      (project) => project.endWork != null,
+    );
+
+    return {
+      currentProjects,
+      pastProjects,
+    };
+  }
+
+  async getDepartmentProjects(departmentId: string) {
+    const { members } = await this.prismaService.department.findUnique({
+      where: {
+        id: departmentId,
+      },
+      include: {
+        members: {
+          include: {
+            projects: {
+              select: {
+                project: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const uniqueProjects = new Set();
+
+    await Promise.all(
+      members.map(async (member) => {
+        await Promise.all(
+          member.projects.map(async (project) => {
+            const projectData = {
+              name: project.project.name,
+              deadlineDate: project.project.deadlineDate,
+              status: project.project.status,
+              members: await this.prismaService.employeeProject.findMany({
+                where: { employeeId: member.id },
+                select: { employee: { select: { name: true } } },
+              }),
+            };
+
+            uniqueProjects.add(JSON.stringify(projectData));
+          }),
+        );
+      }),
+    );
+
+    const departmentProjects = Array.from(uniqueProjects).map((project) =>
+      JSON.parse(project as string),
+    );
+
+    return departmentProjects;
+  }
 }
