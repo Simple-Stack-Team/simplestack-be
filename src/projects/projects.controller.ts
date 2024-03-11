@@ -40,10 +40,11 @@ import {
 export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
 
-  @ApiOkResponse({ description: 'Organization projects list' })
-  @Get()
-  async getAll(@Param('orgId') orgId: string) {
-    return await this.projectsService.getAllProjects(orgId);
+  @Roles(Role.PROJECT_MANAGER)
+  @ApiOkResponse({ description: 'Project manager projects' })
+  @Get('manager')
+  async getManagerProjects() {
+    return await this.projectsService.getAllManagerProjects();
   }
 
   @Roles(Role.PROJECT_MANAGER)
