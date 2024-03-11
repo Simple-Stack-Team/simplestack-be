@@ -109,4 +109,11 @@ export class DepartmentsController {
   ) {
     return await this.departmentsService.deleteDepMember(depId, empId);
   }
+
+  @ApiNotFoundResponse({ description: 'Department not found' })
+  @Roles(Role.DEPARTMENT_MANAGER)
+  @Get(':id/members')
+  async getDepartmentMembers(@Param('id') id: string) {
+    return await this.departmentsService.getDepartmentMembers(id);
+  }
 }
