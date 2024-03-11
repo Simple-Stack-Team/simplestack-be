@@ -31,7 +31,7 @@ export class DeallocationProposalDto {
   reason: string;
 }
 
-export class confirmDto {
+export class ConfirmDto {
   @IsBoolean()
   @IsNotEmpty()
   confirm: boolean;
