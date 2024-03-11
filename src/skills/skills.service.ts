@@ -155,8 +155,6 @@ export class SkillsService {
       where: { id: depId },
     });
     if (!manager) throw new HttpException('Department not found', 404);
-    if (manager.managerId !== managerId)
-      throw new HttpException('You have no rights for this action', 403);
     const skill = await this.prismaService.skill.findUnique({
       where: { id: skillId },
     });
