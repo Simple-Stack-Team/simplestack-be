@@ -160,4 +160,21 @@ export class DepartmentsService {
       },
     });
   }
+
+  async getDepartmentMembers(id: string) {
+    const department = await this.prismaService.department.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        id: true,
+        name: true,
+        members: true,
+      },
+    });
+
+    if (!department) throw new NotFoundException('Department not found');
+
+    return department;
+  }
 }
