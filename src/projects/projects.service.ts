@@ -63,7 +63,7 @@ export class ProjectsService {
       status: project.status,
       description: project.description,
       technologyStack: project.technologyStack,
-      author: { connect: { id: this.request.user.id } },
+      author: { connect: { id: this.request.user.sub } },
     };
 
     const createdProject = await this.prismaService.project.create({
