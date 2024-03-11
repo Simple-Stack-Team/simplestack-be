@@ -186,4 +186,30 @@ export class ProjectsController {
   async getDepartmentProjects(@Param('id') id: string) {
     return await this.projectsService.getDepartmentProjects(id);
   }
+
+  @ApiOkResponse({ description: 'Deallocation proposal updated' })
+  @Roles(Role.PROJECT_MANAGER)
+  @Put('/deallocation-proposal/:deallocationId')
+  async deallocationProposalUpdate(
+    @Param('deallocationId') deallocationId: string,
+    @Body() data: DeallocationProposalDto,
+  ) {
+    return await this.projectsService.deallocationProposalUpdate(
+      deallocationId,
+      data.reason,
+    );
+  }
+
+  @ApiOkResponse({ description: 'Deallocation proposal updated' })
+  @Roles(Role.PROJECT_MANAGER)
+  @Put('/assignment-proposal/:assignmentId')
+  async assignmentProposalUpdate(
+    @Param('assignmentId') assignmentId: string,
+    @Body() data: AssignmentProposalDto,
+  ) {
+    return await this.projectsService.assignmentProposalUpdate(
+      assignmentId,
+      data,
+    );
+  }
 }
