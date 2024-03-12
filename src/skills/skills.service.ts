@@ -151,10 +151,16 @@ export class SkillsService {
     depId: string,
     managerId: string,
   ) {
-    const manager = await this.prismaService.department.findUnique({
+    const dep = await this.prismaService.department.findUnique({
       where: { id: depId },
+      include: { manager: true },
     });
-    if (!manager) throw new HttpException('Department not found', 404);
+    if (!dep) throw new HttpException('Department not found', 404);
+    if (dep.managerId !== managerId)
+      throw new HttpException(
+        'Only department manager of this department can assign skill',
+        403,
+      );
     const skill = await this.prismaService.skill.findUnique({
       where: { id: skillId },
     });
@@ -176,6 +182,9 @@ export class SkillsService {
       data: {
         departmentIds: {
           push: depId,
+        },
+        departmentNames: {
+          push: dep.name,
         },
       },
     });
@@ -207,12 +216,20 @@ export class SkillsService {
         return id;
       }
     });
+    const newDepNames = skill.departmentNames.filter((name) => {
+      if (name !== dep.name) {
+        return name;
+      }
+    });
 
     await this.prismaService.skill.update({
       where: { id: skillId },
       data: {
         departmentIds: {
           set: newDep,
+        },
+        departmentNames: {
+          set: newDepNames,
         },
       },
     });
