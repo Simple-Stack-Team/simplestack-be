@@ -164,7 +164,7 @@ export class SkillsController {
   @Put(
     'delete-skill-from-department/:skillId/department/:depId/manager/:managerId',
   )
-  async deleteSkillToDepartment(
+  async deleteSkillFromDepartment(
     @Param('skillId') skillId: string,
     @Param('depId') depId: string,
     @Param('managerId') managerId: string,
