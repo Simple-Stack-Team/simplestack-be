@@ -30,6 +30,7 @@ export class TeamFinderQueryDto {
   includePastProjects: boolean;
 
   @ApiPropertyOptional()
+  @Transform(({ value }) => Number(value))
   @IsOptional()
   @IsInt()
   @Min(2)
