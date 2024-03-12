@@ -42,7 +42,7 @@ export class SkillsService {
 
     return await this.prismaService.skill.findMany({
       where: { organizationId: orgId },
-      include: { category: true },
+      include: { category: true, departments: true },
     });
   }
 
