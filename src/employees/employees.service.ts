@@ -33,7 +33,11 @@ export class EmployeesService {
       where: { organizationId: orgId, id },
       include: {
         organization: true,
-        personalSkills: true,
+        personalSkills: {
+          include: {
+            skill: true,
+          },
+        },
         createdSkills: true,
         department: true,
         managerAt: true,
