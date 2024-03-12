@@ -129,8 +129,8 @@ export class ProjectsController {
   @ApiOkResponse({ description: 'Assignment and deallocation proposals list' })
   @Roles(Role.DEPARTMENT_MANAGER)
   @Get('/department/:depId/proposals')
-  async getProjectProposal(@Param('depId') depId: string) {
-    return await this.projectsService.getProjectProposal(depId);
+  async getDepartmentProposal(@Param('depId') depId: string) {
+    return await this.projectsService.getDepartmentProposal(depId);
   }
 
   @ApiOkResponse({ description: 'Response was sent' })
@@ -211,5 +211,19 @@ export class ProjectsController {
       assignmentId,
       data,
     );
+  }
+
+  @ApiOkResponse({ description: 'Assignment proposals list' })
+  @Roles(Role.PROJECT_MANAGER)
+  @Get(':projectId/assignments-proposals')
+  async getProjectAssignProposal(@Param('projectId') projectId: string) {
+    return await this.projectsService.getProjectAssingProposal(projectId);
+  }
+
+  @ApiOkResponse({ description: 'Assignment proposals list' })
+  @Roles(Role.PROJECT_MANAGER)
+  @Get(':projectId/deallocations-proposals')
+  async getProjectDeallocProposal(@Param('projectId') projectId: string) {
+    return await this.projectsService.getProjectDeallocProposal(projectId);
   }
 }

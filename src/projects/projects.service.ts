@@ -419,7 +419,7 @@ export class ProjectsService {
     });
   }
 
-  async getProjectProposal(depId: string) {
+  async getDepartmentProposal(depId: string) {
     const department = await this.prismaService.department.findMany({
       where: { id: depId },
       include: { assignmentProposal: true, deallocationProposal: true },
@@ -685,5 +685,31 @@ export class ProjectsService {
         teamRoles: data.teamRoles,
       },
     });
+  }
+
+  async getProjectAssingProposal(projectId: string) {
+    const projectProposal = await this.prismaService.project.findMany({
+      where: { id: projectId },
+      include: { assignmentProposal: true },
+    });
+    if (!projectProposal) throw new NotFoundException('Porject not found');
+
+    const assignments = projectProposal.map((data) => data.assignmentProposal);
+
+    return assignments;
+  }
+
+  async getProjectDeallocProposal(projectId: string) {
+    const projectProposal = await this.prismaService.project.findMany({
+      where: { id: projectId },
+      include: { deallocationProposal: true },
+    });
+    if (!projectProposal) throw new NotFoundException('Porject not found');
+
+    const deallocation = projectProposal.map(
+      (data) => data.deallocationProposal,
+    );
+
+    return deallocation;
   }
 }
