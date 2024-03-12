@@ -177,15 +177,19 @@ export class SkillsService {
       },
     });
 
-    return await this.prismaService.skill.update({
+    await this.prismaService.skill.update({
       where: { id: skillId },
       data: {
         departmentIds: {
           push: depId,
         },
-        departmentNames: {
-          push: dep.name,
-        },
+      },
+    });
+
+    return await this.prismaService.skill.findUnique({
+      where: { id: skillId },
+      include: {
+        departments: true,
       },
     });
   }
@@ -216,20 +220,12 @@ export class SkillsService {
         return id;
       }
     });
-    const newDepNames = skill.departmentNames.filter((name) => {
-      if (name !== dep.name) {
-        return name;
-      }
-    });
 
     await this.prismaService.skill.update({
       where: { id: skillId },
       data: {
         departmentIds: {
           set: newDep,
-        },
-        departmentNames: {
-          set: newDepNames,
         },
       },
     });
