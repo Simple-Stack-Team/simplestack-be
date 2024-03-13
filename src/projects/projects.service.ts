@@ -236,6 +236,8 @@ export class ProjectsService {
             },
           },
         },
+        department: true,
+        assignmentProposal: true,
         projects: {
           include: {
             project: {

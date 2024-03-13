@@ -49,6 +49,11 @@ export class DepartmentsService {
       where: {
         id,
       },
+      include: {
+        skills: true,
+        members: true,
+        manager: true,
+      },
     });
 
     if (!department) throw new NotFoundException('Department not found');
