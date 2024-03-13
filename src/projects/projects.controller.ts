@@ -213,6 +213,24 @@ export class ProjectsController {
     );
   }
 
+  @ApiOkResponse({ description: 'Deallocation proposal deleted' })
+  @Roles(Role.PROJECT_MANAGER)
+  @Delete('/deallocation-proposal/:deallocationId')
+  async deallocationProposalDelete(
+    @Param('deallocationId') deallocationId: string,
+  ) {
+    return await this.projectsService.deallocationProposalDelete(
+      deallocationId,
+    );
+  }
+
+  @ApiOkResponse({ description: 'Deallocation proposal deleted' })
+  @Roles(Role.PROJECT_MANAGER)
+  @Delete('/assignment-proposal/:assignmentId')
+  async assignmentProposalDelete(@Param('assignmentId') assignmentId: string) {
+    return await this.projectsService.assignmentProposalDelete(assignmentId);
+  }
+
   @ApiOkResponse({ description: 'Assignment proposals list' })
   @Roles(Role.PROJECT_MANAGER)
   @Get(':projectId/assignments-proposals')
@@ -220,7 +238,7 @@ export class ProjectsController {
     return await this.projectsService.getProjectAssingProposal(projectId);
   }
 
-  @ApiOkResponse({ description: 'Assignment proposals list' })
+  @ApiOkResponse({ description: 'Deallocation proposals list' })
   @Roles(Role.PROJECT_MANAGER)
   @Get(':projectId/deallocations-proposals')
   async getProjectDeallocProposal(@Param('projectId') projectId: string) {

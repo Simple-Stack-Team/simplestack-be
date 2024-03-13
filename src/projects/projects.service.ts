@@ -668,6 +668,18 @@ export class ProjectsService {
     });
   }
 
+  async deallocationProposalDelete(deallocationId: string) {
+    const deallocPropasal =
+      await this.prismaService.deallocationProposal.findUnique({
+        where: { id: deallocationId },
+      });
+    if (!deallocPropasal) throw new NotFoundException('Proposal not found');
+
+    return await this.prismaService.deallocationProposal.delete({
+      where: { id: deallocationId },
+    });
+  }
+
   async assignmentProposalUpdate(
     assignmentId: string,
     data: AssignmentProposalDto,
@@ -685,6 +697,18 @@ export class ProjectsService {
         workHours: data.workHours,
         teamRoles: data.teamRoles,
       },
+    });
+  }
+
+  async assignmentProposalDelete(assignmentId: string) {
+    const assignPropasal =
+      await this.prismaService.assignmentProposal.findUnique({
+        where: { id: assignmentId },
+      });
+    if (!assignPropasal) throw new NotFoundException('Proposal not found');
+
+    return await this.prismaService.assignmentProposal.delete({
+      where: { id: assignmentId },
     });
   }
 
