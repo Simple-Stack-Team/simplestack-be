@@ -295,7 +295,8 @@ export class ProjectsService {
       if (query.includePartiallyAvailable) {
         fittingEmployees = fittingEmployees.filter((employee) => {
           const totalHours = employee.projects.reduce(
-            (totalHours, project) => totalHours + project.workHours,
+            (totalHours, project) =>
+              !project.endWork && totalHours + project.workHours,
             0,
           );
           if (totalHours < 8) return true;
@@ -688,28 +689,22 @@ export class ProjectsService {
   }
 
   async getProjectAssingProposal(projectId: string) {
-    const projectProposal = await this.prismaService.project.findMany({
-      where: { id: projectId },
-      include: { assignmentProposal: true },
-    });
-    if (!projectProposal) throw new NotFoundException('Porject not found');
+    const projectProposals =
+      await this.prismaService.assignmentProposal.findMany({
+        where: { projectId },
+        include: { employee: true },
+      });
 
-    const assignments = projectProposal.map((data) => data.assignmentProposal);
-
-    return assignments;
+    return projectProposals;
   }
 
   async getProjectDeallocProposal(projectId: string) {
-    const projectProposal = await this.prismaService.project.findMany({
-      where: { id: projectId },
-      include: { deallocationProposal: true },
-    });
-    if (!projectProposal) throw new NotFoundException('Porject not found');
+    const deallocationsProposals =
+      await this.prismaService.deallocationProposal.findMany({
+        where: { projectId },
+        include: { employee: true },
+      });
 
-    const deallocation = projectProposal.map(
-      (data) => data.deallocationProposal,
-    );
-
-    return deallocation;
+    return deallocationsProposals;
   }
 }
