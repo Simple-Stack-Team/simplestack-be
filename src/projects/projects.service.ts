@@ -378,11 +378,11 @@ export class ProjectsService {
     return await this.prismaService.assignmentProposal.create({
       data: {
         workHours: data.workHours,
-        projectId: projectId,
         teamRoles: data.teamRoles,
         comments: data.comments,
-        employeeId: empId,
-        departmentId: employee.departmentId,
+        employee: { connect: { id: empId } },
+        department: { connect: { id: employee.departmentId } },
+        project: { connect: { id: projectId } },
       },
     });
   }
