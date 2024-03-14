@@ -425,14 +425,27 @@ export class ProjectsService {
   async getDepartmentProposal(depId: string) {
     const department = await this.prismaService.department.findMany({
       where: { id: depId },
-      include: { assignmentProposal: true, deallocationProposal: true },
+      include: {
+        assignmentProposal: {
+          include: {
+            project: true,
+            employee: true,
+          },
+        },
+        deallocationProposal: {
+          include: {
+            project: true,
+            employee: true,
+          },
+        },
+      },
     });
     if (!department) throw new NotFoundException('Department not found');
 
     const assignments = department.map((data) => data.assignmentProposal);
     const deallocations = department.map((data) => data.deallocationProposal);
 
-    return [assignments, deallocations];
+    return { assignments, deallocations };
   }
 
   async assignmentConfirmation(
