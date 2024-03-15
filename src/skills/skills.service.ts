@@ -298,4 +298,90 @@ export class SkillsService {
       where: { id: skillAssignmentId },
     });
   }
+
+  async skillStatistics(orgId: string, depId: string, managerId: string) {
+    const department = await this.prismaService.department.findUnique({
+      where: { id: depId, managerId: managerId },
+    });
+    if (!department) throw new NotFoundException('Department not found');
+
+    const employees = await this.prismaService.employee.findMany({
+      where: { departmentId: depId },
+      include: {
+        personalSkills: {
+          include: {
+            skill: true,
+          },
+        },
+      },
+    });
+
+    const nrEmployees = employees.length;
+
+    const statistic = [];
+
+    for (const skillId of department.skillIds) {
+      const employeeWithSkill = [];
+      let skillName: string;
+      for (const emp of employees) {
+        const filteredSkill = emp.personalSkills.find(
+          (skill) => skill.skillId === skillId,
+        );
+        if (filteredSkill) {
+          employeeWithSkill.push(filteredSkill);
+          skillName = filteredSkill.skill.name;
+        }
+      }
+      const nrEmpWithSkill = employeeWithSkill.length;
+
+      const nrLevel1 = employeeWithSkill.filter(
+        (skill) => skill.level === 1,
+      ).length;
+      const nrLevel2 = employeeWithSkill.filter(
+        (skill) => skill.level === 2,
+      ).length;
+      const nrLevel3 = employeeWithSkill.filter(
+        (skill) => skill.level === 3,
+      ).length;
+      const nrLevel4 = employeeWithSkill.filter(
+        (skill) => skill.level === 4,
+      ).length;
+      const nrLevel5 = employeeWithSkill.filter(
+        (skill) => skill.level === 5,
+      ).length;
+
+      const percentOfEmployees = (nrEmpWithSkill * 100) / nrEmployees;
+      let nrEmp = nrEmpWithSkill;
+      if (!nrEmp) nrEmp = 1;
+
+      statistic.push({
+        skillId: skillId,
+        skillName: skillName,
+        nrOfEmployees: nrEmpWithSkill,
+        percentOfEmployees: percentOfEmployees,
+        level1: {
+          number: nrLevel1,
+          percent: (nrLevel1 * 100) / nrEmp,
+        },
+        level2: {
+          number: nrLevel2,
+          percent: (nrLevel2 * 100) / nrEmp,
+        },
+        level3: {
+          number: nrLevel3,
+          percent: (nrLevel3 * 100) / nrEmp,
+        },
+        level4: {
+          number: nrLevel4,
+          percent: (nrLevel4 * 100) / nrEmp,
+        },
+        level5: {
+          number: nrLevel5,
+          percent: (nrLevel5 * 100) / nrEmp,
+        },
+      });
+    }
+
+    return statistic;
+  }
 }

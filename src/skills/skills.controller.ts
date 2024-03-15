@@ -204,4 +204,19 @@ export class SkillsController {
       empId,
     );
   }
+
+  @ApiNotFoundResponse({ description: 'Department not found' })
+  @ApiForbiddenResponse({
+    description: 'You have no rights for this action',
+  })
+  @ApiOkResponse({ description: 'Skill statistics' })
+  @Roles(Role.DEPARTMENT_MANAGER)
+  @Get('/department/:depId/manager/:managerId')
+  async skillStatistics(
+    @Param('orgId') orgId: string,
+    @Param('depId') depId: string,
+    @Param('managerId') managerId: string,
+  ) {
+    return await this.skillsService.skillStatistics(orgId, depId, managerId);
+  }
 }
