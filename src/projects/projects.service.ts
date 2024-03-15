@@ -675,9 +675,7 @@ export class ProjectsService {
   async getProjectTeam(projectId: string) {
     const project = await this.getProject(projectId);
 
-    const proposedMembers = project.assignmentProposal.map(
-      (assignment) => assignment.employee,
-    );
+    const proposedMembers = project.assignmentProposal;
 
     const members = await this.prismaService.employeeProject.findMany({
       where: {
