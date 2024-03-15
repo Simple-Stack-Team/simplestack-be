@@ -44,7 +44,7 @@ export class EmployeesController {
   @ApiNotFoundResponse({ description: 'Employee not found' })
   @ApiResponse({ status: HttpStatus.CREATED })
   @Roles(Role.ORGANIZATION_ADMIN)
-  @Put('assign-roles/:id')
+  @Put(':id/assign-roles')
   async assignRoles(
     @Param('orgId') orgId: string,
     @Param('id') id: string,

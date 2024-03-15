@@ -60,7 +60,15 @@ export class OrganizationsService {
     teamRoleId: string,
     updatedName: string,
   ): Promise<TeamRole> {
-    const teamRole = await this.prismaService.teamRole.update({
+    const teamRole = await this.prismaService.teamRole.findUnique({
+      where: {
+        id: teamRoleId,
+        organizationId: orgId,
+      },
+    });
+
+    if (!teamRole) throw new NotFoundException('Team role not found');
+    return await this.prismaService.teamRole.update({
       where: {
         id: teamRoleId,
         organizationId: orgId,
@@ -69,13 +77,10 @@ export class OrganizationsService {
         name: updatedName,
       },
     });
-
-    if (!teamRole) throw new NotFoundException('Team role not found');
-    return teamRole;
   }
 
   async deleteTeamRole(orgId: string, teamRoleId: string): Promise<TeamRole> {
-    const teamRole = await this.prismaService.teamRole.delete({
+    const teamRole = await this.prismaService.teamRole.findUnique({
       where: {
         id: teamRoleId,
         organizationId: orgId,
@@ -83,6 +88,11 @@ export class OrganizationsService {
     });
 
     if (!teamRole) throw new NotFoundException('Team role not found');
-    return teamRole;
+    return await this.prismaService.teamRole.delete({
+      where: {
+        id: teamRoleId,
+        organizationId: orgId,
+      },
+    });
   }
 }
