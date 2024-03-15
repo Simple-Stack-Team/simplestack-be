@@ -43,6 +43,7 @@ export class DepartmentsController {
     );
   }
 
+  @ApiNotFoundResponse({ description: 'Organization not found' })
   @ApiOkResponse({ description: 'Organization departments list' })
   @Roles(Role.ORGANIZATION_ADMIN)
   @Get()
@@ -52,17 +53,17 @@ export class DepartmentsController {
 
   @ApiNotFoundResponse({ description: 'Department not found' })
   @Roles(Role.ORGANIZATION_ADMIN)
-  @Get(':id')
-  async findOne(@Param('id') id: string) {
+  @Get(':depId')
+  async findOne(@Param('depId') id: string) {
     return await this.departmentsService.getDepartment(id);
   }
 
   @ApiBadRequestResponse({ description: 'Invalid body' })
   @ApiNotFoundResponse({ description: 'Department not found' })
   @Roles(Role.ORGANIZATION_ADMIN)
-  @Put(':id')
+  @Put(':depId')
   async update(
-    @Param('id') id: string,
+    @Param('depId') id: string,
     @Body() updateDepartmentDto: CreateDepartmentDto,
   ) {
     return await this.departmentsService.updateDepartmentName(
@@ -73,8 +74,8 @@ export class DepartmentsController {
 
   @ApiNotFoundResponse({ description: 'Department not found' })
   @Roles(Role.ORGANIZATION_ADMIN)
-  @Delete(':id')
-  async remove(@Param('id') id: string) {
+  @Delete(':depId')
+  async remove(@Param('depId') id: string) {
     return await this.departmentsService.deleteDepartment(id);
   }
 
@@ -112,8 +113,8 @@ export class DepartmentsController {
 
   @ApiNotFoundResponse({ description: 'Department not found' })
   @Roles(Role.DEPARTMENT_MANAGER)
-  @Get(':id/members')
-  async getDepartmentMembers(@Param('id') id: string) {
+  @Get(':depId/members')
+  async getDepartmentMembers(@Param('depId') id: string) {
     return await this.departmentsService.getDepartmentMembers(id);
   }
 }
