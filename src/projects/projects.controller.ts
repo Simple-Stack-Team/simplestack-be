@@ -117,7 +117,7 @@ export class ProjectsController {
 
   @Roles(Role.PROJECT_MANAGER)
   @ApiOkResponse({ description: 'Project team finder list' })
-  @Get(':id/teamfinder/gpt')
+  @Post(':id/teamfinder/gpt')
   async gptTeamFinder(
     @Param('orgId') orgId: string,
     @Param('id') projectId: string,
