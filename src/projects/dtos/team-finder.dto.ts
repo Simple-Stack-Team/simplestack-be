@@ -1,4 +1,12 @@
-import { IsBoolean, IsInt, IsOptional, Max, Min } from 'class-validator';
+import {
+  IsBoolean,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Max,
+  Min,
+} from 'class-validator';
 import { Transform } from 'class-transformer';
 
 import { toBoolean } from 'src/projects/utils/dto-transform.util';
@@ -36,4 +44,11 @@ export class TeamFinderQueryDto {
   @Min(2)
   @Max(6)
   deadlineWeeks: number;
+}
+
+export class GPTTeamFinderDTO {
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  prompt: string;
 }

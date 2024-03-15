@@ -24,7 +24,10 @@ import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/auth/types/role.types';
 import { ProjectsService } from 'src/projects/projects.service';
 import { CreateProjectDto } from 'src/projects/dtos/create-project.dto';
-import { TeamFinderQueryDto } from 'src/projects/dtos/team-finder.dto';
+import {
+  GPTTeamFinderDTO,
+  TeamFinderQueryDto,
+} from 'src/projects/dtos/team-finder.dto';
 import {
   AssignmentProposalDto,
   DeallocationProposalDto,
@@ -111,6 +114,18 @@ export class ProjectsController {
   ) {
     return await this.projectsService.teamFinder(orgId, projectId, query);
   }
+
+  @Roles(Role.PROJECT_MANAGER)
+  @ApiOkResponse({ description: 'Project team finder list' })
+  @Post(':id/teamfinder/gpt')
+  async gptTeamFinder(
+    @Param('orgId') orgId: string,
+    @Param('id') projectId: string,
+    @Body() request: GPTTeamFinderDTO,
+  ) {
+    return await this.projectsService.gptTeamFinder(orgId, projectId, request);
+  }
+
   @ApiOkResponse({ description: 'Deallocation proposal sent' })
   @Roles(Role.PROJECT_MANAGER)
   @Post(':projectId/employee/:employeeId/deallocation')

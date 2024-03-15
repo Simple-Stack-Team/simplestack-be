@@ -14,18 +14,25 @@ import {
   ProjectTeamRoleDto,
 } from 'src/projects/dtos/create-project.dto';
 import { ProjectStatus } from 'src/projects/types/project-types';
-import { TeamFinderQueryDto } from 'src/projects/dtos/team-finder.dto';
+import {
+  GPTTeamFinderDTO,
+  TeamFinderQueryDto,
+} from 'src/projects/dtos/team-finder.dto';
 import {
   AssignmentProposalDto,
   DeallocationProposalDto,
   ConfirmDto,
 } from 'src/projects/dtos/assign-dealloc-proposal';
+import { OpenaiService } from 'src/openai/openai.service';
+import { IChatRequest } from 'src/openai/types/openai-types';
+import OpenAI from 'openai';
 
 @Injectable({ scope: Scope.REQUEST })
 export class ProjectsService {
   constructor(
     @Inject(REQUEST) private request: Request,
     private readonly prismaService: PrismaService,
+    private readonly openAIService: OpenaiService,
   ) {}
 
   async getAllManagerProjects() {
@@ -347,6 +354,126 @@ export class ProjectsService {
     }
 
     return fittingEmployees;
+  }
+
+  async gptTeamFinder(
+    orgId: string,
+    projectId: string,
+    request: GPTTeamFinderDTO,
+  ) {
+    const org = await this.prismaService.organization.findUnique({
+      where: { id: orgId },
+    });
+
+    if (!org) throw new NotFoundException('Organization not found');
+
+    const project = await this.getProject(projectId);
+
+    const technologyStack = project.technologyStack.map((skill) =>
+      skill.toLowerCase(),
+    );
+
+    const employees = await this.prismaService.employee.findMany({
+      where: {
+        organizationId: orgId,
+      },
+      select: {
+        id: true,
+        name: true,
+        personalSkills: {
+          select: {
+            skill: {
+              select: {
+                name: true,
+                id: true,
+              },
+            },
+          },
+        },
+        department: {
+          select: {
+            name: true,
+          },
+        },
+        projects: {
+          select: {
+            project: {
+              select: {
+                teamRoles: {
+                  select: {
+                    teamRole: {
+                      select: {
+                        name: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const projects = await this.prismaService.employeeProject.findMany({
+      select: {
+        id: true,
+        employee: { select: { id: true, name: true } },
+        employeeRoles: true,
+        project: {
+          select: {
+            id: true,
+            technologyStack: true,
+            teamRoles: true,
+          },
+        },
+      },
+    });
+
+    const reqMessage = {
+      messages: [
+        {
+          role: 'system',
+          content: 'You are a helpful pm assistant designed to output JSON',
+        },
+        {
+          role: 'user',
+          content: `My project has the following technology stack: ${technologyStack}. Who are the employees that fit best for my technology stack? Select their id and names. ${request.prompt ? request.prompt : ''}`,
+        },
+        {
+          role: 'assistant',
+          content:
+            'First, give me the list of your employees along with their skills and a list of employee projects (containing the projects that employee has/had). Then i will select those that fit based on your request. I will select their id name and personalSkills',
+        },
+        {
+          role: 'user',
+          content: `Employee are: ${employees.map((employee) =>
+            JSON.stringify({
+              id: employee.id,
+              name: employee.name,
+              skills: employee.personalSkills.map((skill) => skill.skill.name),
+              departmentName: employee.department?.name ?? '',
+            }),
+          )}`,
+        },
+        {
+          role: 'user',
+          content: `Employee Projects are: ${JSON.stringify(projects)}`,
+        },
+      ],
+    } as unknown as IChatRequest;
+    console.log(employees);
+    if (request.prompt)
+      reqMessage.messages.push({
+        role: 'assistant',
+        content: `${request.prompt}`,
+      });
+
+    const getMessages = (await this.openAIService.getMessageData(
+      reqMessage,
+    )) as OpenAI.ChatCompletion;
+    return this.openAIService.getChatOpenaiResponse(getMessages).result.message
+      .content;
   }
 
   async assignmentProposal(

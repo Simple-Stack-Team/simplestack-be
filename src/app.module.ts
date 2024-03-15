@@ -10,6 +10,7 @@ import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { DepartmentsModule } from 'src/departments/departments.module';
 import { SkillsModule } from 'src/skills/skills.module';
 import { ProjectsModule } from 'src/projects/projects.module';
+import { OpenaiModule } from './openai/openai.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { ProjectsModule } from 'src/projects/projects.module';
     DepartmentsModule,
     SkillsModule,
     ProjectsModule,
+    OpenaiModule,
   ],
   providers: [
     PrismaService,
