@@ -32,9 +32,9 @@ export class OrganizationsController {
 
   @ApiCreatedResponse({ description: 'Organization created' })
   @Roles(Role.ORGANIZATION_ADMIN)
-  @Post(':id/teamroles')
+  @Post(':orgId/teamroles')
   async createTeamRoles(
-    @Param('id') orgId: string,
+    @Param('orgId') orgId: string,
     @Body() teamRole: TeamRoleDto,
   ) {
     return await this.organizationsService.createOrganizationTeamRoles(
@@ -45,17 +45,17 @@ export class OrganizationsController {
 
   @ApiOkResponse({ description: 'Organization team roles list' })
   @Roles(Role.ORGANIZATION_ADMIN)
-  @Get(':id/teamroles')
-  async getTeamRoles(@Param('id') orgId: string) {
+  @Get(':orgId/teamroles')
+  async getTeamRoles(@Param('orgId') orgId: string) {
     return await this.organizationsService.getOrganizationTeamRoles(orgId);
   }
 
   @ApiCreatedResponse({ description: 'Organization teamroles updated' })
   @ApiNotFoundResponse({ description: 'Team role not found' })
   @Roles(Role.ORGANIZATION_ADMIN)
-  @Put(':id/teamroles/:teamroleId')
+  @Put(':orgId/teamroles/:teamroleId')
   async updateTeamRole(
-    @Param('id') orgId: string,
+    @Param('orgId') orgId: string,
     @Param('teamroleId') teamRoleId: string,
     @Body() teamRole: TeamRoleDto,
   ) {
@@ -69,9 +69,9 @@ export class OrganizationsController {
   @ApiOkResponse({ description: 'Organization team role deleted' })
   @Roles(Role.ORGANIZATION_ADMIN)
   @ApiNotFoundResponse({ description: 'Team role not found' })
-  @Delete(':id/teamroles/:teamroleId')
+  @Delete(':orgId/teamroles/:teamroleId')
   async deleteTeamRole(
-    @Param('id') orgId: string,
+    @Param('orgId') orgId: string,
     @Param('teamroleId') teamRoleId: string,
   ) {
     return await this.organizationsService.deleteTeamRole(orgId, teamRoleId);

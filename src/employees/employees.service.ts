@@ -1,9 +1,4 @@
-import {
-  HttpException,
-  HttpStatus,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { Employee } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
@@ -15,17 +10,21 @@ export class EmployeesService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async getAllEmployees(orgId: string): Promise<Employee[]> {
-    try {
-      return await this.prismaService.employee.findMany({
-        where: { organizationId: orgId },
-        include: {
-          department: true,
-          managerAt: true,
-        },
-      });
-    } catch (error) {
-      throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    const organization = await this.prismaService.organization.findUnique({
+      where: {
+        id: orgId,
+      },
+    });
+
+    if (!organization) throw new NotFoundException('Organization not found');
+
+    return await this.prismaService.employee.findMany({
+      where: { organizationId: orgId },
+      include: {
+        department: true,
+        managerAt: true,
+      },
+    });
   }
 
   async getEmployeeById(orgId: string, id: string): Promise<Employee> {
