@@ -15,8 +15,7 @@ export class OpenaiService {
 
   async getMessageData(request: IChatRequest): Promise<OpenAI.ChatCompletion> {
     return this.openAIService.chat.completions.create({
-      // model: 'gpt-4-turbo-preview',
-      model: 'gpt-3.5-turbo',
+      model: this.configService.get('GPT_MODEL'),
       messages: request.messages,
       response_format: { type: 'json_object' },
     });
