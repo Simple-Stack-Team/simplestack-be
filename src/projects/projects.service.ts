@@ -690,11 +690,11 @@ export class ProjectsService {
 
     const activeMembers = members
       .filter((member) => member.endWork == null)
-      .map((member) => member.employee);
+      .map((member) => member);
 
     const pastMembers = members
       .filter((member) => member.endWork != null)
-      .map((member) => member.employee);
+      .map((member) => member);
 
     return {
       proposedMembers,
