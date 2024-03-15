@@ -7,7 +7,7 @@ export class DepartmentsService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async create(orgId: string, name: string) {
-    const org = this.prismaService.organization.findUnique({
+    const org = await this.prismaService.organization.findUnique({
       where: {
         id: orgId,
       },
@@ -37,6 +37,14 @@ export class DepartmentsService {
   }
 
   async getOrganizationDepartments(orgId: string) {
+    const org = await this.prismaService.organization.findUnique({
+      where: {
+        id: orgId,
+      },
+    });
+
+    if (!org) throw new NotFoundException('Organization not found');
+
     return await this.prismaService.department.findMany({
       where: {
         organizationId: orgId,

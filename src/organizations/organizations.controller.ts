@@ -30,7 +30,7 @@ import { Role } from 'src/auth/types/role.types';
 export class OrganizationsController {
   constructor(private readonly organizationsService: OrganizationsService) {}
 
-  @ApiCreatedResponse({ description: 'Organization created' })
+  @ApiCreatedResponse({ description: 'Team role created' })
   @Roles(Role.ORGANIZATION_ADMIN)
   @Post(':orgId/teamroles')
   async createTeamRoles(

@@ -215,7 +215,7 @@ export class ProjectsController {
     );
   }
 
-  @ApiOkResponse({ description: 'Deallocation proposal updated' })
+  @ApiOkResponse({ description: 'Assignment proposal updated' })
   @Roles(Role.PROJECT_MANAGER)
   @Put('/assignment-proposal/:assignmentId')
   async assignmentProposalUpdate(
