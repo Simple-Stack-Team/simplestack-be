@@ -104,7 +104,11 @@ export class ProjectsService {
           },
         },
         organization: true,
-        members: true,
+        members: {
+          include: {
+            employee: true,
+          },
+        },
         assignmentProposal: {
           include: {
             employee: true,
@@ -787,7 +791,7 @@ export class ProjectsService {
         members: {
           include: {
             projects: {
-              select: {
+              include: {
                 project: true,
               },
             },
@@ -802,17 +806,19 @@ export class ProjectsService {
       members.map(async (member) => {
         await Promise.all(
           member.projects.map(async (project) => {
-            const projectData = {
-              name: project.project.name,
-              deadlineDate: project.project.deadlineDate,
-              status: project.project.status,
-              members: await this.prismaService.employeeProject.findMany({
-                where: { employeeId: member.id },
-                select: { employee: { select: { name: true } } },
-              }),
-            };
+            if (!project.endWork) {
+              const projectData = {
+                name: project.project.name,
+                deadlineDate: project.project.deadlineDate,
+                status: project.project.status,
+                members: await this.prismaService.employeeProject.findMany({
+                  where: { employeeId: member.id },
+                  select: { employee: { select: { name: true } } },
+                }),
+              };
 
-            uniqueProjects.add(JSON.stringify(projectData));
+              uniqueProjects.add(JSON.stringify(projectData));
+            }
           }),
         );
       }),
