@@ -69,15 +69,17 @@ export class DepartmentsService {
   }
 
   async updateDepartmentName(id: string, name: string) {
-    const department = await this.prismaService.department.update({
+    const department = await this.prismaService.department.findUnique({
+      where: { id },
+    });
+
+    if (!department) throw new NotFoundException('Department not found');
+    return await this.prismaService.department.update({
       where: { id },
       data: {
         name,
       },
     });
-
-    if (!department) throw new NotFoundException('Department not found');
-    return department;
   }
 
   async deleteDepartment(id: string) {
@@ -189,5 +191,33 @@ export class DepartmentsService {
     if (!department) throw new NotFoundException('Department not found');
 
     return department;
+  }
+
+  async getDepartmentNotifications(id: string) {
+    await this.getDepartment(id);
+    return this.prismaService.notification.findMany({
+      where: {
+        departmentId: id,
+      },
+      include: {
+        employee: true,
+      },
+    });
+  }
+
+  async readNotification(id: string) {
+    const notification = await this.prismaService.notification.findUnique({
+      where: { id },
+    });
+    if (!notification) throw new NotFoundException('Notification not found');
+    if (notification.isRead)
+      throw new HttpException('Notification is already readed', 409);
+
+    return await this.prismaService.notification.update({
+      where: { id },
+      data: {
+        isRead: true,
+      },
+    });
   }
 }

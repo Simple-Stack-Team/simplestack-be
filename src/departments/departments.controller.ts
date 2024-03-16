@@ -117,4 +117,18 @@ export class DepartmentsController {
   async getDepartmentMembers(@Param('depId') id: string) {
     return await this.departmentsService.getDepartmentMembers(id);
   }
+
+  @ApiNotFoundResponse({ description: 'Department not found' })
+  @Roles(Role.DEPARTMENT_MANAGER)
+  @Get(':depId/members')
+  async getDepartmentNotifications(@Param('depId') id: string) {
+    return await this.departmentsService.getDepartmentNotifications(id);
+  }
+
+  @ApiNotFoundResponse({ description: 'Notification not found' })
+  @Roles(Role.DEPARTMENT_MANAGER)
+  @Put('notification/:notificationId')
+  async readNotification(@Param('notificationId') id: string) {
+    return await this.departmentsService.readNotification(id);
+  }
 }

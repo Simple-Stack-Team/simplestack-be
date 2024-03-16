@@ -486,6 +486,10 @@ export class ProjectsService {
       where: { id: empId },
     });
     if (!employee) throw new NotFoundException('Employee not found');
+
+    if (!employee.departmentId)
+      throw new HttpException('Employee should be in a department', 409);
+
     const project = await this.prismaService.project.findUnique({
       where: { id: projectId },
       include: { teamRoles: true },
@@ -504,6 +508,16 @@ export class ProjectsService {
         throw new NotFoundException('Team role not found');
       }
     });
+
+    await this.prismaService.notification.create({
+      data: {
+        departmentId: employee.departmentId,
+        organizationId: employee.organizationId,
+        employeeId: employee.id,
+        description: 'The employee was proposed to be assign to a project',
+      },
+    });
+
     return await this.prismaService.assignmentProposal.create({
       data: {
         workHours: data.workHours,
@@ -539,12 +553,30 @@ export class ProjectsService {
     if (!membersId.includes(empId))
       throw new HttpException('Employee is not a part of this project', 409);
 
+    const employeeProject = await this.prismaService.employeeProject.findFirst({
+      where: {
+        projectId: projectId,
+        employeeId: empId,
+      },
+    });
+
+    await this.prismaService.notification.create({
+      data: {
+        departmentId: employee.departmentId,
+        organizationId: employee.organizationId,
+        employeeId: employee.id,
+        description:
+          'The employee was proposed to be deallocated from a project',
+      },
+    });
+
     return await this.prismaService.deallocationProposal.create({
       data: {
         employeeId: empId,
         projectId: projectId,
         reason: data.reason,
         departmentId: employee.departmentId,
+        employeeProjectId: employeeProject.id,
       },
     });
   }
