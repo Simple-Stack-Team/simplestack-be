@@ -756,6 +756,7 @@ export class ProjectsService {
             name: true,
           },
         },
+        workHours: true,
         endWork: true,
         employeeRoles: true,
         project: {
