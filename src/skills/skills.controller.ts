@@ -63,8 +63,8 @@ export class SkillsController {
   @ApiNotFoundResponse({ description: 'Skill not found' })
   @ApiOkResponse({ description: 'Skill details' })
   @Roles(Role.EMPLOYEE)
-  @Get(':id')
-  async getSkillById(@Param('id') id: string) {
+  @Get(':skillId')
+  async getSkillById(@Param('skillId') id: string) {
     return await this.skillsService.getSkillById(id);
   }
 

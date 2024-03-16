@@ -65,16 +65,16 @@ export class ProjectsController {
   }
 
   @ApiOkResponse({ description: 'Project detailed view' })
-  @Get(':id')
-  async getProject(@Param('id') id: string) {
+  @Get(':projectId')
+  async getProject(@Param('projectId') id: string) {
     return await this.projectsService.getProject(id);
   }
 
   @ApiOkResponse({ description: 'Project updated' })
   @Roles(Role.PROJECT_MANAGER)
-  @Put(':id')
+  @Put(':projectId')
   async update(
-    @Param('id') id: string,
+    @Param('projectId') id: string,
     @Body() updateProjectDto: CreateProjectDto,
   ) {
     return await this.projectsService.updateProject(id, updateProjectDto);
@@ -82,17 +82,17 @@ export class ProjectsController {
 
   @ApiOkResponse({ description: 'Project deleted' })
   @Roles(Role.PROJECT_MANAGER)
-  @Delete(':id')
+  @Delete(':projectId')
   async deleteProject(@Param('id') id: string) {
     return await this.projectsService.deleteProject(id);
   }
 
   @ApiOkResponse({ description: 'Assignment proposal sent' })
   @Roles(Role.PROJECT_MANAGER)
-  @Post(':projectId/employee/:employeeId/assignment')
+  @Post(':projectId/employee/:empId/assignment')
   async assignmentProposal(
     @Param('projectId') projectId: string,
-    @Param('employeeId') empId: string,
+    @Param('empId') empId: string,
     @Param('orgId') orgId: string,
     @Body() data: AssignmentProposalDto,
   ) {
@@ -106,10 +106,10 @@ export class ProjectsController {
 
   @Roles(Role.PROJECT_MANAGER)
   @ApiOkResponse({ description: 'Project team finder list' })
-  @Get(':id/teamfinder')
+  @Get(':projectId/teamfinder')
   async teamFinder(
     @Param('orgId') orgId: string,
-    @Param('id') projectId: string,
+    @Param('projectId') projectId: string,
     @Query() query: TeamFinderQueryDto,
   ) {
     return await this.projectsService.teamFinder(orgId, projectId, query);
@@ -117,10 +117,10 @@ export class ProjectsController {
 
   @Roles(Role.PROJECT_MANAGER)
   @ApiOkResponse({ description: 'Project team finder list' })
-  @Post(':id/teamfinder/gpt')
+  @Post(':projectId/teamfinder/gpt')
   async gptTeamFinder(
     @Param('orgId') orgId: string,
-    @Param('id') projectId: string,
+    @Param('projectId') projectId: string,
     @Body() request: GPTTeamFinderDTO,
   ) {
     return await this.projectsService.gptTeamFinder(orgId, projectId, request);
@@ -128,10 +128,10 @@ export class ProjectsController {
 
   @ApiOkResponse({ description: 'Deallocation proposal sent' })
   @Roles(Role.PROJECT_MANAGER)
-  @Post(':projectId/employee/:employeeId/deallocation')
+  @Post(':projectId/employee/:empId/deallocation')
   async deallocationProposal(
     @Param('projectId') projectId: string,
-    @Param('employeeId') empId: string,
+    @Param('empId') empId: string,
     @Body() data: DeallocationProposalDto,
   ) {
     return await this.projectsService.deallocationProposal(
@@ -165,10 +165,10 @@ export class ProjectsController {
 
   @ApiOkResponse({ description: 'Response was sent' })
   @Roles(Role.PROJECT_MANAGER)
-  @Put('/deallocate-employee/:deallocateId/employee-project/:empProjectId')
+  @Put('/deallocate-employee/:deallocationId/employee-project/:empProjectId')
   async deallocationConfirmation(
     @Param('orgId') orgId: string,
-    @Param('deallocateId') deallocateId: string,
+    @Param('deallocationId') deallocateId: string,
     @Param('empProjectId') empProjectId: string,
     @Body() confirm: ConfirmDto,
   ) {
@@ -181,24 +181,25 @@ export class ProjectsController {
   }
 
   @ApiOkResponse({ description: 'Project team view' })
-  @Get(':id/team')
-  async getProjectTeam(@Param('id') id: string) {
+  @Get(':projectId/team')
+  async getProjectTeam(@Param('projectId') id: string) {
     return await this.projectsService.getProjectTeam(id);
   }
 
   @ApiOkResponse({
     description: 'Employee / Project manager active and past projects',
   })
-  @Get('employee/:id')
-  async getEmployeeProjects(@Param('id') id: string) {
+  @Get('employee/:empId')
+  async getEmployeeProjects(@Param('empId') id: string) {
     return await this.projectsService.getEmployeeProjects(id);
   }
 
   @ApiOkResponse({
     description: 'Department members projects',
   })
-  @Get('department/:id')
-  async getDepartmentProjects(@Param('id') id: string) {
+  @Roles(Role.DEPARTMENT_MANAGER)
+  @Get('department/:depId')
+  async getDepartmentProjects(@Param('depId') id: string) {
     return await this.projectsService.getDepartmentProjects(id);
   }
 

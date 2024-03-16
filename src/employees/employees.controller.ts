@@ -29,8 +29,8 @@ export class EmployeesController {
   @ApiNotFoundResponse({ description: 'Employee not found' })
   @ApiResponse({ status: HttpStatus.OK })
   @Roles(Role.EMPLOYEE)
-  @Get(':id/employee')
-  async getEmployee(@Param('orgId') orgId: string, @Param('id') id: string) {
+  @Get(':empId/employee')
+  async getEmployee(@Param('orgId') orgId: string, @Param('empId') id: string) {
     return await this.employeesService.getEmployeeById(orgId, id);
   }
 
@@ -44,10 +44,10 @@ export class EmployeesController {
   @ApiNotFoundResponse({ description: 'Employee not found' })
   @ApiResponse({ status: HttpStatus.CREATED })
   @Roles(Role.ORGANIZATION_ADMIN)
-  @Put(':id/assign-roles')
+  @Put(':empId/assign-roles')
   async assignRoles(
     @Param('orgId') orgId: string,
-    @Param('id') id: string,
+    @Param('empId') id: string,
     @Body() roles: RolesDto,
   ) {
     return await this.employeesService.assignRoles(orgId, id, roles);

@@ -19,6 +19,7 @@ model Organization {
   orgSkills           Skill[]
   projects            Project[]
   employeeProject     EmployeeProject[]
+  notifications       Notification[]
 }
 
 model TeamRole {
@@ -47,6 +48,7 @@ model Employee {
   assignmentProposal  AssignmentProposal[]
   deallocationProposal DeallocationProposal[]
   createdProjects     Project[]
+  notifications       Notification[]
 }
 
 model Department {
@@ -62,6 +64,7 @@ model Department {
   skillIds            String[]        @db.ObjectId
   assignmentProposal  AssignmentProposal[]
   deallocationProposal DeallocationProposal[]
+  notifications       Notification[]
 }
 
 model SkillCategory {
@@ -129,6 +132,7 @@ model EmployeeProject {
   workHours           Int
   startWork           DateTime
   endWork             DateTime?
+  deallocationProposal DeallocationProposal? @relation("DeallocEmployee")
 }
 
 model ProjectTeamRole {
@@ -162,6 +166,20 @@ model  DeallocationProposal {
   reason              String
   departmentId        String          @db.ObjectId
   department          Department      @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  employeeProjectId   String          @db.ObjectId @unique
+  employeeProject     EmployeeProject @relation("DeallocEmployee",fields: [employeeProjectId], references: [id], onDelete: Cascade)
+}
+
+model Notification{
+  id                  String          @id @default(auto()) @map("_id") @db.ObjectId
+  description         String
+  organization        Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade) 
+  organizationId      String          @db.ObjectId
+  department          Department      @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  departmentId        String          @db.ObjectId
+  isRead              Boolean         @default(false)
+  employee            Employee        @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  employeeId          String          @db.ObjectId
 }
 
 enum Role {
