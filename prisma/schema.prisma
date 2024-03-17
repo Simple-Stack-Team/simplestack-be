@@ -87,7 +87,6 @@ model Skill {
   authorId            String          @db.ObjectId
   departments         Department[]    @relation(fields: [departmentIds], references: [id])
   departmentIds       String[]        @db.ObjectId
-  departmentNames     String[]
   SkillAssignments    SkillAssignment[]
 }
 
