@@ -301,9 +301,14 @@ export class SkillsService {
 
   async skillStatistics(orgId: string, depId: string, managerId: string) {
     const department = await this.prismaService.department.findUnique({
-      where: { id: depId, managerId: managerId },
+      where: { id: depId, organizationId: orgId },
     });
     if (!department) throw new NotFoundException('Department not found');
+    if (department.managerId !== managerId)
+      throw new HttpException(
+        'Only manager of the department can acces this information',
+        403,
+      );
 
     const employees = await this.prismaService.employee.findMany({
       where: { departmentId: depId },
