@@ -567,6 +567,9 @@ export class ProjectsService {
       },
     });
 
+    if (!employeeProject.endWork)
+      throw new HttpException('Employee is already deallocated', 409);
+
     await this.prismaService.notification.create({
       data: {
         departmentId: employee.departmentId,
