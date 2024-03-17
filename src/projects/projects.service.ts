@@ -813,20 +813,18 @@ export class ProjectsService {
       members.map(async (member) => {
         await Promise.all(
           member.projects.map(async (project) => {
-            if (!project.endWork) {
-              const projectData = {
-                id: project.project.id,
-                name: project.project.name,
-                deadlineDate: project.project.deadlineDate,
-                status: project.project.status,
-                members: await this.prismaService.employeeProject.findMany({
-                  where: { employeeId: member.id },
-                  select: { employee: { select: { name: true } } },
-                }),
-              };
+            const projectData = {
+              id: project.project.id,
+              name: project.project.name,
+              deadlineDate: project.project.deadlineDate,
+              status: project.project.status,
+              members: await this.prismaService.employeeProject.findMany({
+                where: { employeeId: member.id },
+                select: { employee: { select: { name: true } } },
+              }),
+            };
 
-              uniqueProjects.add(JSON.stringify(projectData));
-            }
+            uniqueProjects.add(JSON.stringify(projectData));
           }),
         );
       }),
