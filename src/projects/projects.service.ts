@@ -810,7 +810,6 @@ export class ProjectsService {
       members.map(async (member) => {
         await Promise.all(
           member.projects.map(async (project) => {
-            if (!project.endWork) {
               const projectData = {
                 id: project.project.id,
                 name: project.project.name,
@@ -823,7 +822,6 @@ export class ProjectsService {
               };
 
               uniqueProjects.add(JSON.stringify(projectData));
-            }
           }),
         );
       }),
