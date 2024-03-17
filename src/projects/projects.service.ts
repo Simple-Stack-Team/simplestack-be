@@ -274,6 +274,9 @@ export class ProjectsService {
         (skillAssignment) => skillAssignment.skill.name.toLowerCase(),
       );
 
+      if (employee.projects.some((project) => project.project.id === projectId))
+        return false;
+
       if (query.includePastProjects) {
         const pastTechnlogyStack = employee.projects.flatMap(
           (pastProject) => pastProject.project.technologyStack,
@@ -809,6 +812,7 @@ export class ProjectsService {
           member.projects.map(async (project) => {
             if (!project.endWork) {
               const projectData = {
+                id: project.project.id,
                 name: project.project.name,
                 deadlineDate: project.project.deadlineDate,
                 status: project.project.status,
