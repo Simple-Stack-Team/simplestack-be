@@ -1223,6 +1223,271 @@ describe('AppController (e2e)', () => {
 //         expect(res.body.message).toBeDefined();
 //       });
 //   });
+
+  // it('/organizations/{orgId}/projects/manager (GET) 200 PROJECT MANAGER PROJECTS', () => {
+  //   return request(app.getHttpServer())
+  //     .get('/organizations/{orgId}/projects/manager')
+  //     .expect(200)
+  //     .set('Authorization', `Bearer ${process.env.TOKEN}`)
+  //     .then((res) => {
+  //       expect(res.body).toBeDefined();
+  //     });
+  // });
+
+  // it('/organizations/{orgId}/projects/manager (GET) 401 UNAUTHORIZED', () => {
+  //   return request(app.getHttpServer())
+  //     .get('/organizations/{orgId}/projects/manager')
+  //     .expect(401)
+  //     .then((res) => {
+  //       expect(res.body).toBeDefined();
+  //     });
+  // });
+
+// /*   it('/organizations/{orgId}/projects (POST) 201 PROJECT CREATED', () => {
+//     return request(app.getHttpServer())
+//       .post('/organizations/65e8d7d19177805d42a51cfb/projects')
+//       .expect(201)
+//       .send({
+//         name: 'TEST TS TEST',
+//         period: 'Fixed',
+//         startDate: '2024-04-05T14:48:00.000Z',
+//         deadlineDate: '2024-10-05T14:48:00.000Z',
+//         status: 'Starting',
+//         description: 'string',
+//         technologyStack: [
+//           'Frontend'
+//         ],
+//         teamRoles: [
+//           {
+//             teamroleId: '65ecced04504b42876f655bb',
+//             nrOfMembers: 1
+//           }
+//         ]
+//       })
+//       .set('Authorization', `Bearer ${process.env.TOKEN}`)
+//       .then((res) => {
+//         expect(res.body.id).toBeDefined();
+//       });
+//   }); */
   
+//   it('/organizations/{orgId}/projects (POST) 400 INVALID DATA', () => {
+//     return request(app.getHttpServer())
+//       .post('/organizations/65e8d7d19177805d42a51cfb/projects')
+//       .expect(400)
+//       .send({
+//         name: 'TEST TS TEST',
+//         period: 'string',
+//         startDate: '2024-04-05T14:48:00.000Z',
+//         deadlineDate: '2024-10-05T14:48:00.000Z',
+//         status: 'Starting',
+//         description: 'string',
+//         technologyStack: [
+//           'Frontend'
+//         ],
+//         teamRoles: [
+//           {
+//             teamroleId: '65ecced04504b42876f655bb',
+//             nrOfMembers: 1
+//           }
+//         ]
+//       })
+//       .set('Authorization', `Bearer ${process.env.TOKEN}`)
+//       .then((res) => {
+//         expect(res.body.message).toBeDefined();
+//       });
+//   });
+
+//   it('/organizations/{orgId}/projects (POST) 401 UNAUTHORIZED', () => {
+//     return request(app.getHttpServer())
+//       .post('/organizations/65e8d7d19177805d42a51cfb/projects')
+//       .expect(401)
+//       .send({
+//         name: 'TEST TS TEST',
+//         period: 'Fixed',
+//         startDate: '2024-04-05T14:48:00.000Z',
+//         deadlineDate: '2024-10-05T14:48:00.000Z',
+//         status: 'Starting',
+//         description: 'string',
+//         technologyStack: [
+//           'Frontend'
+//         ],
+//         teamRoles: [
+//           {
+//             teamroleId: '65ecced04504b42876f655bb',
+//             nrOfMembers: 1
+//           }
+//         ]
+//       })
+//       .then((res) => {
+//         expect(res.body.message).toBeDefined();
+//       });
+//   });
+
+
+//   it('/organizations/{orgId}/projects (POST) 404 ORGANIZATION NOT FOUND', () => {
+//     return request(app.getHttpServer())
+//       .post('/organizations/65e8d7d19177805d42a51cfa/projects')
+//       .expect(404)
+//       .send({
+//         name: 'TEST TS TEST',
+//         period: 'Fixed',
+//         startDate: '2024-04-05T14:48:00.000Z',
+//         deadlineDate: '2024-10-05T14:48:00.000Z',
+//         status: 'Starting',
+//         description: 'string',
+//         technologyStack: [
+//           'Frontend'
+//         ],
+//         teamRoles: [
+//           {
+//             teamroleId: '65ecced04504b42876f655bb',
+//             nrOfMembers: 1
+//           }
+//         ]
+//       })
+//       .set('Authorization', `Bearer ${process.env.TOKEN}`)
+//       .then((res) => {
+//         expect(res.body.message).toBeDefined();
+//       });
+//   });
+
+//   it('/organizations/{orgId}/projects/{projectId} (GET) 200 OK', () => {
+//     return request(app.getHttpServer())
+//       .get('/organizations/65e8d7d19177805d42a51cfb/projects/65f7f4c57864b4e0ada6e0b8')
+//       .expect(200)
+//       .set('Authorization', `Bearer ${process.env.TOKEN}`)
+//       .then((res) => {
+//         expect(res.body.id).toBeDefined();
+//       });
+//   });
+
+//   it('/organizations/{orgId}/projects/{projectId} (GET) 401 UNAUTHORIZED', () => {
+//     return request(app.getHttpServer())
+//       .get('/organizations/65e8d7d19177805d42a51cfb/projects/65f7f4c57864b4e0ada6e0b8')
+//       .expect(401)
+//       .then((res) => {
+//         expect(res.body.message).toBeDefined();
+//       });
+//   });
+
+//   it('/organizations/{orgId}/projects/{projectId} (GET) 404 NOT FOUND', () => {
+//     return request(app.getHttpServer())
+//       .get('/organizations/65e8d7d19177805d42a51cfb/projects/65f7f4c57864b4e0ada6e0b7')
+//       .expect(404)
+//       .set('Authorization', `Bearer ${process.env.TOKEN}`)
+//       .then((res) => {
+//         expect(res.body.message).toBeDefined();
+//       });
+//   });
+
+//   it('/organizations/{orgId}/projects/{projectId} (PUT) 200 OK', () => {
+//     return request(app.getHttpServer())
+//       .put('/organizations/65e8d7d19177805d42a51cfb/projects/65f7f4c57864b4e0ada6e0b8')
+//       .send({
+//         name: 'TEST NAME UPDATED',
+//         period: 'Fixed',
+//         startDate: '2024-04-05T14:48:00.000Z',
+//         deadlineDate: '2024-10-05T14:48:00.000Z',
+//         status: 'Starting',
+//         description: 'string',
+//         technologyStack: [
+//           'Frontend'
+//         ],
+//         teamRoles: [
+//           {
+//             teamroleId: '65ecced04504b42876f655bb',
+//             nrOfMembers: 1
+//           }
+//         ]
+//       })
+//       .expect(200)
+//       .set('Authorization', `Bearer ${process.env.TOKEN}`)
+//       .then((res) => {
+//         expect(res.body.id).toBeDefined();
+//       });
+//   });
+
+//   it('/organizations/{orgId}/projects/{projectId} (PUT) 401 UNAUTHORIZED', () => {
+//     return request(app.getHttpServer())
+//       .put('/organizations/65e8d7d19177805d42a51cfb/projects/65f7f4c57864b4e0ada6e0b8')
+//       .send({
+//         name: 'TEST NAME UPDATED',
+//         period: 'Fixed',
+//         startDate: '2024-04-05T14:48:00.000Z',
+//         deadlineDate: '2024-10-05T14:48:00.000Z',
+//         status: 'Starting',
+//         description: 'string',
+//         technologyStack: [
+//           'Frontend'
+//         ],
+//         teamRoles: [
+//           {
+//             teamroleId: '65ecced04504b42876f655bb',
+//             nrOfMembers: 1
+//           }
+//         ]
+//       })
+//       .expect(401)
+//       .then((res) => {
+//         expect(res.body.message).toBeDefined();
+//       });
+//   });
+
+//   it('/organizations/{orgId}/projects/{projectId} (PUT) 404 NOT FOUND', () => {
+//     return request(app.getHttpServer())
+//       .put('/organizations/65e8d7d19177805d42a51cfb/projects/65f7f4c57864b4e0ada6e0b7')
+//       .send({
+//         name: 'TEST NAME UPDATED',
+//         period: 'Fixed',
+//         startDate: '2024-04-05T14:48:00.000Z',
+//         deadlineDate: '2024-10-05T14:48:00.000Z',
+//         status: 'Starting',
+//         description: 'string',
+//         technologyStack: [
+//           'Frontend'
+//         ],
+//         teamRoles: [
+//           {
+//             teamroleId: '65ecced04504b42876f655bb',
+//             nrOfMembers: 1
+//           }
+//         ]
+//       })
+//       .expect(404)
+//       .set('Authorization', `Bearer ${process.env.TOKEN}`)
+//       .then((res) => {
+//         expect(res.body.message).toBeDefined();
+//       });
+//   });
+
+// /*   it('/organizations/{orgId}/projects/{projectId} (DELETE) 200 OK', () => {
+//     return request(app.getHttpServer())
+//       .delete('/organizations/65e8d7d19177805d42a51cfb/projects/65f7f4c57864b4e0ada6e0b8')
+//       .expect(200)
+//       .then((res) => {
+//         expect(res.body.id).toBeDefined();
+//       });
+//   }); */
+
+//   it('/organizations/{orgId}/projects/{projectId} (DELETE) 401 UNAUTHORIZED', () => {
+//     return request(app.getHttpServer())
+//       .delete('/organizations/65e8d7d19177805d42a51cfb/projects/65f7f4c57864b4e0ada6e0b8')
+//       .expect(401)
+//       .then((res) => {
+//         expect(res.body.message).toBeDefined();
+//       });
+//   });
+
+//   // ****************************************ALERT****************************************
+// /*   it('/organizations/{orgId}/projects/{projectId} (DELETE) 404 NOT FOUND', () => {
+//     return request(app.getHttpServer())
+//       .delete('/organizations/65e8d7d19177805d42a51cfb/projects/65f7f4c57864b4e0ada6e0b7')
+//       .expect(404)
+//       .set('Authorization', `Bearer ${process.env.TOKEN}`)
+//       .then((res) => {
+//         expect(res.body.message).toBeDefined();
+//       });
+//   }); */
+
 
 });
