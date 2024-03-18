@@ -64,10 +64,12 @@ export class DepartmentsController {
   @Put(':depId')
   async update(
     @Param('depId') id: string,
+    @Param('orgId') orgId: string,
     @Body() updateDepartmentDto: CreateDepartmentDto,
   ) {
     return await this.departmentsService.updateDepartmentName(
       id,
+      orgId,
       updateDepartmentDto.name,
     );
   }

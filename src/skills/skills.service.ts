@@ -82,10 +82,6 @@ export class SkillsService {
     if (!skillCategory)
       throw new HttpException('Skill Category not found', 404);
 
-    await this.prismaService.skill.deleteMany({
-      where: { categoryId: id },
-    });
-
     return await this.prismaService.skillCategory.delete({
       where: { id },
     });
