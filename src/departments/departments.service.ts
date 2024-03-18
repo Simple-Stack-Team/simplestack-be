@@ -211,7 +211,7 @@ export class DepartmentsService {
     });
     if (!notification) throw new NotFoundException('Notification not found');
     if (notification.isRead)
-      throw new HttpException('Notification is already readed', 409);
+      throw new HttpException('Notification is read', 409);
 
     return await this.prismaService.notification.update({
       where: { id },

@@ -120,7 +120,7 @@ export class DepartmentsController {
 
   @ApiNotFoundResponse({ description: 'Department not found' })
   @Roles(Role.DEPARTMENT_MANAGER)
-  @Get(':depId/members')
+  @Get(':depId/notifications')
   async getDepartmentNotifications(@Param('depId') id: string) {
     return await this.departmentsService.getDepartmentNotifications(id);
   }

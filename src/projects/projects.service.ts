@@ -521,7 +521,7 @@ export class ProjectsService {
         departmentId: employee.departmentId,
         organizationId: employee.organizationId,
         employeeId: employee.id,
-        description: 'The employee was proposed to be assign to a project',
+        description: `${employee.name} was proposed to be assigned in a project`,
       },
     });
 
@@ -575,8 +575,7 @@ export class ProjectsService {
         departmentId: employee.departmentId,
         organizationId: employee.organizationId,
         employeeId: employee.id,
-        description:
-          'The employee was proposed to be deallocated from a project',
+        description: `${employee.name} was proposed to be deallocated from a project`,
       },
     });
 
