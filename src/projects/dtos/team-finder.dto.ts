@@ -1,7 +1,6 @@
 import {
   IsBoolean,
   IsInt,
-  IsNotEmpty,
   IsOptional,
   IsString,
   Max,
@@ -49,6 +48,5 @@ export class TeamFinderQueryDto {
 export class GPTTeamFinderDTO {
   @IsOptional()
   @IsString()
-  @IsNotEmpty()
   prompt: string;
 }

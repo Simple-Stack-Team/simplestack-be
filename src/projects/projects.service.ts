@@ -402,6 +402,7 @@ export class ProjectsService {
             name: true,
           },
         },
+        assignmentProposal: true,
         projects: {
           select: {
             project: {
@@ -427,6 +428,9 @@ export class ProjectsService {
         id: true,
         employee: { select: { id: true, name: true } },
         employeeRoles: true,
+        endWork: true,
+        startWork: true,
+        workHours: true,
         project: {
           select: {
             id: true,
@@ -445,12 +449,12 @@ export class ProjectsService {
         },
         {
           role: 'user',
-          content: `My project has the following technology stack: ${technologyStack}. Who are the employees that fit best for my technology stack? Select their id and names. ${request.prompt ? request.prompt : ''}`,
+          content: `My project has the following technology stack: ${technologyStack}. Who are the employees that fit best for my technology stack? ${request.prompt ? request.prompt : ''}`,
         },
         {
           role: 'assistant',
           content:
-            'First, give me the list of your employees along with their skills and a list of employee projects (containing the projects that employee has/had). Then i will select those that fit based on your request. I will select their id name and personalSkills',
+            'First, give me the list of your employees along with their skills and a list of employee projects (containing the projects that employee has/had). Then i will select those that fit based on your request',
         },
         {
           role: 'user',
@@ -465,11 +469,11 @@ export class ProjectsService {
         },
         {
           role: 'user',
-          content: `Employee Projects are: ${JSON.stringify(projects)}`,
+          content: `Employee Projects are: ${JSON.stringify(projects)}.... \n\n\n Please select their  object(id, name). The suggested response should contain a field called employees that contains an array of the objects of the suggested employees, in json`,
         },
       ],
     } as unknown as IChatRequest;
-    console.log(employees);
+
     if (request.prompt)
       reqMessage.messages.push({
         role: 'assistant',
@@ -479,8 +483,65 @@ export class ProjectsService {
     const getMessages = (await this.openAIService.getMessageData(
       reqMessage,
     )) as OpenAI.ChatCompletion;
-    return this.openAIService.getChatOpenaiResponse(getMessages).result.message
-      .content;
+    const response =
+      await this.openAIService.getChatOpenaiResponse(getMessages).result.message
+        .content;
+
+    const parsedResponse = JSON.parse(response);
+
+    const fittingEmployees = parsedResponse.employees;
+    if (!Array.isArray(fittingEmployees)) {
+      throw new Error(
+        'Suggested employees not found or not in the correct format.',
+      );
+    }
+
+    const fetchedEmployees = [];
+    for (const { id } of fittingEmployees) {
+      const employeeData = await this.prismaService.employee.findUnique({
+        where: {
+          id,
+        },
+        select: {
+          id: true,
+          name: true,
+          personalSkills: {
+            include: {
+              skill: {
+                select: {
+                  name: true,
+                  id: true,
+                },
+              },
+            },
+          },
+          department: true,
+          assignmentProposal: true,
+          projects: {
+            include: {
+              project: {
+                include: {
+                  teamRoles: {
+                    include: {
+                      teamRole: {
+                        select: {
+                          name: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+      if (employeeData) {
+        fetchedEmployees.push(employeeData);
+      }
+    }
+
+    return fetchedEmployees;
   }
 
   async assignmentProposal(
