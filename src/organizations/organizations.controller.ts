@@ -17,6 +17,7 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 
+import { Public } from 'src/auth/decorators/public.decorator';
 import { OrganizationsService } from 'src/organizations/organizations.service';
 import { TeamRoleDto } from 'src/organizations/dto/teamrole.dto';
 import { Roles } from 'src/auth/decorators/roles.decorator';
@@ -44,10 +45,10 @@ export class OrganizationsController {
   }
 
   @ApiOkResponse({ description: 'Organization team roles list' })
-  @Roles(Role.ORGANIZATION_ADMIN)
-  @Get(':orgId/teamroles')
-  async getTeamRoles(@Param('orgId') orgId: string) {
-    return await this.organizationsService.getOrganizationTeamRoles(orgId);
+  @Public()
+  @Get(':orgId')
+  async getOrganization(@ Param('orgId') orgId: string) {
+    return await this.organizationsService.getOrganizationPublic(orgId);
   }
 
   @ApiCreatedResponse({ description: 'Organization teamroles updated' })
