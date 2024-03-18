@@ -51,6 +51,13 @@ export class OrganizationsController {
     return await this.organizationsService.getOrganizationPublic(orgId);
   }
 
+  @ApiOkResponse({ description: 'Organization team roles' })
+  @Roles(Role.ORGANIZATION_ADMIN)
+  @Get(':id/teamroles')
+  async getTeamRoles(@Param('id') orgId: string) {
+    return await this.organizationsService.getOrganizationTeamRoles(orgId);
+  }
+
   @ApiCreatedResponse({ description: 'Organization teamroles updated' })
   @ApiNotFoundResponse({ description: 'Team role not found' })
   @Roles(Role.ORGANIZATION_ADMIN)
