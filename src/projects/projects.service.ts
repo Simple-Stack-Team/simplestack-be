@@ -560,7 +560,7 @@ export class ProjectsService {
 
     const project = await this.prismaService.project.findUnique({
       where: { id: projectId },
-      include: { teamRoles: true },
+      include: { teamRoles: true, members: true },
     });
     if (!project) throw new NotFoundException('Employee not found');
 
@@ -576,6 +576,14 @@ export class ProjectsService {
         throw new NotFoundException('Team role not found');
       }
     });
+
+    const existingProposal =
+      await this.prismaService.assignmentProposal.findFirst({
+        where: { employeeId: empId, projectId },
+      });
+
+    if (existingProposal)
+      throw new HttpException('Employee is already proposed', 409);
 
     await this.prismaService.notification.create({
       data: {
@@ -957,6 +965,7 @@ export class ProjectsService {
   }
 
   async getProjectAssingProposal(projectId: string) {
+    await this.getProject(projectId);
     const projectProposals =
       await this.prismaService.assignmentProposal.findMany({
         where: { projectId },
@@ -967,6 +976,7 @@ export class ProjectsService {
   }
 
   async getProjectDeallocProposal(projectId: string) {
+    await this.getProject(projectId);
     const deallocationsProposals =
       await this.prismaService.deallocationProposal.findMany({
         where: { projectId },

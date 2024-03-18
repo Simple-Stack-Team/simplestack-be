@@ -68,12 +68,26 @@ export class DepartmentsService {
     return department;
   }
 
-  async updateDepartmentName(id: string, name: string) {
+  async updateDepartmentName(id: string, orgId: string, name: string) {
     const department = await this.prismaService.department.findUnique({
       where: { id },
     });
 
     if (!department) throw new NotFoundException('Department not found');
+
+    const dep = await this.prismaService.department.findFirst({
+      where: {
+        organizationId: orgId,
+        name: {
+          contains: name,
+          mode: 'insensitive',
+        },
+      },
+    });
+
+    if (dep)
+      throw new HttpException('Department with that name already exist', 409);
+
     return await this.prismaService.department.update({
       where: { id },
       data: {
@@ -85,7 +99,7 @@ export class DepartmentsService {
   async deleteDepartment(id: string) {
     const department = await this.prismaService.department.findUnique({
       where: { id },
-      include: { members: true }, // Include associated employees
+      include: { members: true },
     });
 
     if (!department) throw new NotFoundException('Department not found');
