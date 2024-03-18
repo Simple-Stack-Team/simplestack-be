@@ -7,6 +7,20 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class OrganizationsService {
   constructor(private readonly prismaService: PrismaService) {}
 
+  async getOrganizationPublic(
+    orgId: string,
+  ): Promise<Organization> {
+    const organization = await this.prismaService.organization.findUnique({
+      where: {
+        id: orgId,
+      },
+      select: { name: true },
+    });
+  
+    if (! organization) throw new NotFoundException('Organization not found');
+    return organization;
+  }
+
   async createOrganization(
     name: string,
     address: string,
