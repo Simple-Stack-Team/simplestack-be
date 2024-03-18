@@ -99,7 +99,7 @@ export class DepartmentsService {
   async deleteDepartment(id: string) {
     const department = await this.prismaService.department.findUnique({
       where: { id },
-      include: { members: true }, // Include associated employees
+      include: { members: true },
     });
 
     if (!department) throw new NotFoundException('Department not found');
