@@ -7,17 +7,17 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class OrganizationsService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async getOrganizationPublic(
-    orgId: string,
-  ): Promise<Organization> {
+  async getOrganizationPublic(orgId: string): Promise<{
+    orgName: string;
+  }> {
     const organization = await this.prismaService.organization.findUnique({
       where: {
         id: orgId,
       },
-      select: { name: true },
+      select: { orgName: true },
     });
-  
-    if (! organization) throw new NotFoundException('Organization not found');
+
+    if (!organization) throw new NotFoundException('Organization not found');
     return organization;
   }
 

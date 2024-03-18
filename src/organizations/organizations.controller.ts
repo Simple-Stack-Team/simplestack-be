@@ -44,10 +44,10 @@ export class OrganizationsController {
     );
   }
 
-  @ApiOkResponse({ description: 'Organization team roles list' })
+  @ApiOkResponse({ description: 'Public organization name' })
   @Public()
   @Get(':orgId')
-  async getOrganization(@ Param('orgId') orgId: string) {
+  async getOrganization(@Param('orgId') orgId: string) {
     return await this.organizationsService.getOrganizationPublic(orgId);
   }
 
