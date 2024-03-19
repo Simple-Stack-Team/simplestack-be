@@ -52,7 +52,7 @@ export class DepartmentsController {
   }
 
   @ApiNotFoundResponse({ description: 'Department not found' })
-  @Roles(Role.ORGANIZATION_ADMIN)
+  @Roles(Role.ORGANIZATION_ADMIN, Role.DEPARTMENT_MANAGER)
   @Get(':depId')
   async findOne(@Param('depId') id: string) {
     return await this.departmentsService.getDepartment(id);
