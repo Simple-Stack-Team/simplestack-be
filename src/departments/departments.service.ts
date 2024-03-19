@@ -123,7 +123,7 @@ export class DepartmentsService {
       include: { organization: true },
     });
     if (!employee) throw new NotFoundException('Employee not found');
-    if (employee.departmentId !== depId)
+    if (employee.departmentId !== depId && employee.departmentId)
       throw new HttpException('Employee is in another department', 400);
 
     if (!employee.roles.includes('DEPARTMENT_MANAGER'))
