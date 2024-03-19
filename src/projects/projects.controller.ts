@@ -149,7 +149,7 @@ export class ProjectsController {
   }
 
   @ApiOkResponse({ description: 'Response was sent' })
-  @Roles(Role.PROJECT_MANAGER)
+  @Roles(Role.DEPARTMENT_MANAGER)
   @Put('/assign-employee/:assignmentId')
   async assignmentConfirmation(
     @Param('orgId') orgId: string,
@@ -164,7 +164,7 @@ export class ProjectsController {
   }
 
   @ApiOkResponse({ description: 'Response was sent' })
-  @Roles(Role.PROJECT_MANAGER)
+  @Roles(Role.DEPARTMENT_MANAGER)
   @Put('/deallocate-employee/:deallocationId/employee-project/:empProjectId')
   async deallocationConfirmation(
     @Param('orgId') orgId: string,
