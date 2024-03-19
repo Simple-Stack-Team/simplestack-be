@@ -52,7 +52,7 @@ export class OrganizationsController {
   }
 
   @ApiOkResponse({ description: 'Organization team roles' })
-  @Roles(Role.ORGANIZATION_ADMIN)
+  @Roles(Role.ORGANIZATION_ADMIN, Role.PROJECT_MANAGER)
   @Get(':id/teamroles')
   async getTeamRoles(@Param('id') orgId: string) {
     return await this.organizationsService.getOrganizationTeamRoles(orgId);
