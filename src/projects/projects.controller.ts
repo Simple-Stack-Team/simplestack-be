@@ -83,7 +83,7 @@ export class ProjectsController {
   @ApiOkResponse({ description: 'Project deleted' })
   @Roles(Role.PROJECT_MANAGER)
   @Delete(':projectId')
-  async deleteProject(@Param('id') id: string) {
+  async deleteProject(@Param('projectId') id: string) {
     return await this.projectsService.deleteProject(id);
   }
 

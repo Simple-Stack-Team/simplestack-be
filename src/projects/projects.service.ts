@@ -556,7 +556,7 @@ export class ProjectsService {
     if (!employee) throw new NotFoundException('Employee not found');
 
     if (!employee.departmentId)
-      throw new HttpException('Employee should be in a department', 409);
+      throw new HttpException('Employee should be in a department', 400);
 
     const project = await this.prismaService.project.findUnique({
       where: { id: projectId },
