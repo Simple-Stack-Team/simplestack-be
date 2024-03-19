@@ -636,8 +636,16 @@ export class ProjectsService {
       },
     });
 
-    if (!employeeProject.endWork)
+    if (employeeProject.endWork)
       throw new HttpException('Employee is already deallocated', 409);
+
+    const existingProposal =
+      await this.prismaService.deallocationProposal.findFirst({
+        where: { employeeId: empId, projectId },
+      });
+
+    if (existingProposal)
+      throw new HttpException('Employee is already proposed', 409);
 
     await this.prismaService.notification.create({
       data: {
