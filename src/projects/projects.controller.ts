@@ -230,7 +230,7 @@ export class ProjectsController {
   }
 
   @ApiOkResponse({ description: 'Deallocation proposal deleted' })
-  @Roles(Role.PROJECT_MANAGER)
+  @Roles(Role.DEPARTMENT_MANAGER)
   @Delete('/deallocation-proposal/:deallocationId')
   async deallocationProposalDelete(
     @Param('deallocationId') deallocationId: string,
@@ -241,7 +241,7 @@ export class ProjectsController {
   }
 
   @ApiOkResponse({ description: 'Deallocation proposal deleted' })
-  @Roles(Role.PROJECT_MANAGER)
+  @Roles(Role.DEPARTMENT_MANAGER)
   @Delete('/assignment-proposal/:assignmentId')
   async assignmentProposalDelete(@Param('assignmentId') assignmentId: string) {
     return await this.projectsService.assignmentProposalDelete(assignmentId);
